@@ -14,7 +14,7 @@
 
 <style>
   :root{
-    --bg:#a7a199; --tile:#faf8f4; --tile2:#ede9df;
+    --bg:#8f8a82; --tile:#faf8f4; --tile2:#ede9df;
     --text:#2a2318; --muted:#5a4f40; --hint:#736654;
     --board-dark:#6b5d4a; --board-light:#e8e0d2; --accent:#5e5850;
     --green:#2a7a4a; --orange:#d46820; --red:#c0321a;
@@ -89,10 +89,16 @@
   .bar > i{display:block; height:100%; width:0; background:var(--board-dark); transition:width .2s;}
 
   /* board */
-  .board{display:grid; grid-template-columns:repeat(8,1fr); width:100%; max-width:860px;
-    margin:0.2rem auto 0.8rem; aspect-ratio:1;
+  .board{display:grid; grid-template-columns:repeat(8,1fr); width:100%; aspect-ratio:1;
     border-radius:10px; overflow:hidden; border:1px solid var(--border);
     user-select:none; --bl:#f0d9b5; --bd:#b58863;}
+  .board-wrap{display:grid; grid-template-columns:1.25rem 1fr; grid-template-rows:1fr 1.25rem;
+    max-width:880px; margin:0.2rem auto 0.8rem;}
+  .coords-rank{display:flex; flex-direction:column;}
+  .coords-rank div{flex:1; display:flex; align-items:center; justify-content:center;
+    font-size:0.74rem; color:var(--hint);}
+  .coords-file{grid-column:2; display:flex;}
+  .coords-file div{flex:1; text-align:center; font-size:0.74rem; color:var(--hint); padding-top:0.15rem;}
   .board.theme-brown{--bl:#f0d9b5; --bd:#b58863;}
   .board.theme-blue {--bl:#dee3e6; --bd:#8ca2ad;}
   .board.theme-green{--bl:#ffffdd; --bd:#86a666;}
@@ -166,7 +172,7 @@
     <p class="lead">Haalt je laatste rated Classical-partijen op, analyseert elke eigen zet op diepte 16 en zet de fouten in je review-queue.</p>
     <div class="row">
       <span class="status">Partijen:</span>
-      <input type="number" id="bld-n" min="1" max="5" value="3">
+      <input type="number" id="bld-n" min="1" max="10" value="7">
       <button id="bld-go" disabled>Bouw queue</button>
     </div>
     <div class="progress hide" id="bld-prog"></div>
@@ -196,7 +202,12 @@
           <option value="green">Groen</option>
         </select></label>
       </div>
-      <div class="board theme-brown" id="rev-board"></div>
+      <div class="board-wrap">
+        <div class="coords-rank" id="rev-ranks"></div>
+        <div class="board theme-brown" id="rev-board"></div>
+        <div class="coords-corner"></div>
+        <div class="coords-file" id="rev-files"></div>
+      </div>
       <div>
         <span class="badge" id="rev-badge"></span>
         <span class="meta-line" id="rev-context" style="margin-left:.4rem"></span>
@@ -546,7 +557,7 @@ async function buildQueue(){
   if(building || !engineReady) return;
   const token = localStorage.getItem(TOKEN_KEY), user = localStorage.getItem(USER_KEY);
   if(!token || !user){ setBuildMsg("Eerst een token opslaan."); return; }
-  const n = Math.max(1, Math.min(5, parseInt(document.getElementById("bld-n").value,10)||3));
+  const n = Math.max(1, Math.min(10, parseInt(document.getElementById("bld-n").value,10)||7));
   building=true; refreshControls();
   const prog = document.getElementById("bld-prog"), bar=document.getElementById("bld-bar");
   prog.classList.remove("hide"); bar.classList.remove("hide");
@@ -638,7 +649,8 @@ async function buildQueue(){
 
   await setMeta(meta);
   setBar(100);
-  setBuildMsg(`Klaar — ${added} nieuwe foutmomenten toegevoegd (partijtal: ${meta.gamesCount}).`);
+  if(added===0) setBuildMsg("Geen nieuwe fouten — deze partijen staan al in de queue. Speel een nieuwe partij, of wis de queue om ze opnieuw te analyseren.");
+  else setBuildMsg(`Klaar — ${added} nieuwe foutmomenten toegevoegd (partijtal: ${meta.gamesCount}).`);
   building=false; refreshControls(); await renderStats();
 }
 function setBuildMsg(t){ document.getElementById("bld-prog").textContent = t; }
@@ -682,6 +694,8 @@ function renderBoard(fen, playedUci, bestUci, color, revealed){
   const el = document.getElementById("rev-board");
   el.className = "board theme-" + boardTheme;
   el.innerHTML = html;
+  document.getElementById("rev-ranks").innerHTML = rankOrder.map(ry=>`<div>${ry+1}</div>`).join("");
+  document.getElementById("rev-files").innerHTML = fileOrder.map(fx=>`<div>${String.fromCharCode(97+fx)}</div>`).join("");
 }
 
 function showCard(e, revealed){
