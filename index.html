@@ -31,7 +31,7 @@
     padding:calc(env(safe-area-inset-top) + 1.4rem) 1.1rem
             calc(env(safe-area-inset-bottom) + 2rem);
   }
-  .wrap{max-width:560px; margin:0 auto;}
+  .wrap{max-width:900px; margin:0 auto;}
 
   header{margin:0 0 1.3rem 2px;}
   h1{font-family:var(--display); font-weight:600; font-size:2.1rem;
@@ -90,17 +90,25 @@
 
   /* board */
   .board{display:grid; grid-template-columns:repeat(8,1fr); width:100%; aspect-ratio:1;
-    border-radius:12px; overflow:hidden; border:1px solid var(--border); margin:0.2rem 0 0.8rem;
-    user-select:none;}
-  .sq{display:flex; align-items:center; justify-content:center; position:relative;
-    font-size:clamp(20px,8.4vw,40px); line-height:1;}
-  .sq.l{background:var(--board-light);} .sq.d{background:var(--board-dark);}
-  .sq .pc{filter:drop-shadow(0 1px 0 rgba(0,0,0,.15));}
-  .sq.pc-w .pc{color:#fbfaf7;} .sq.pc-b .pc{color:#1c1812;}
-  .sq.hl-best::after,.sq.hl-played::after{content:""; position:absolute; inset:0; pointer-events:none;}
+    border-radius:10px; overflow:hidden; border:1px solid var(--border); margin:0.2rem 0 0.8rem;
+    user-select:none; --bl:#f0d9b5; --bd:#b58863;}
+  .board.theme-brown{--bl:#f0d9b5; --bd:#b58863;}
+  .board.theme-blue {--bl:#dee3e6; --bd:#8ca2ad;}
+  .board.theme-green{--bl:#ffffdd; --bd:#86a666;}
+  .sq{position:relative;}
+  .sq.l{background:var(--bl);} .sq.d{background:var(--bd);}
+  .sq .pc{position:absolute; inset:0; background-size:88% 88%;
+    background-position:center; background-repeat:no-repeat;}
+  .sq.hl-best::after,.sq.hl-played::after,.sq.hl-both::after{content:""; position:absolute; inset:0; pointer-events:none;}
   .sq.hl-best::after{box-shadow:inset 0 0 0 4px rgba(42,122,74,.85);}
   .sq.hl-played::after{box-shadow:inset 0 0 0 4px rgba(192,50,26,.8);}
   .sq.hl-both::after{box-shadow:inset 0 0 0 4px rgba(42,122,74,.85), inset 0 0 0 9px rgba(192,50,26,.55);}
+  /* board/piece selectors */
+  .bset{display:flex; gap:0.6rem; margin:0 0 0.7rem;}
+  .bset label{flex:1; font-size:0.74rem; text-transform:uppercase; letter-spacing:.03em; color:var(--muted);}
+  .bset select{width:100%; margin-top:0.25rem; font-family:var(--body); font-size:0.88rem;
+    background:var(--tile2); border:1px solid var(--border); border-radius:9px;
+    padding:0.45rem 0.5rem; color:var(--text);}
 
   .badge{display:inline-block; font-family:var(--display); font-weight:600; font-size:0.78rem;
     padding:0.18rem 0.6rem; border-radius:999px; color:#fff;}
@@ -179,7 +187,15 @@
     </div>
 
     <div id="rev-panel" class="hide">
-      <div class="board" id="rev-board"></div>
+      <div class="bset">
+        <label>Stukken<select id="set-pieces"></select></label>
+        <label>Bord<select id="set-board">
+          <option value="brown">Bruin</option>
+          <option value="blue">Blauw</option>
+          <option value="green">Groen</option>
+        </select></label>
+      </div>
+      <div class="board theme-brown" id="rev-board"></div>
       <div>
         <span class="badge" id="rev-badge"></span>
         <span class="meta-line" id="rev-context" style="margin-left:.4rem"></span>
@@ -219,6 +235,7 @@
 <script type="module">
 "use strict";
 import { Chess } from "./chess.min.js";
+import { PIECES, PIECE_SETS } from "./pieces.js";
 
 /* ============================ Stockfish engine ============================ */
 const engine = {
@@ -627,8 +644,14 @@ function setBuildMsg(t){ document.getElementById("bld-prog").textContent = t; }
 function setBar(pct){ document.querySelector("#bld-bar > i").style.width = Math.max(0,Math.min(100,pct))+"%"; }
 
 /* ============================ Review ============================ */
-const GLYPH = {wk:"♚",wq:"♛",wr:"♜",wb:"♝",wn:"♞",wp:"♟",bk:"♚",bq:"♛",br:"♜",bb:"♝",bn:"♞",bp:"♟"};
 let reviewList=[], reviewIdx=0, currentG=0;
+let pieceSet = localStorage.getItem("ct_piece_set") || "cburnett";
+let boardTheme = localStorage.getItem("ct_board_theme") || "brown";
+function pieceUri(letterUpper, colorChar){
+  const code = colorChar + letterUpper;                 // bv. wN, bK
+  const svg = (PIECES[pieceSet] && PIECES[pieceSet][code]) || PIECES.cburnett[code];
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+}
 
 function renderBoard(fen, playedUci, bestUci, color, revealed){
   const board = fenToBoard(fen);
@@ -650,11 +673,14 @@ function renderBoard(fen, playedUci, bestUci, color, revealed){
       else if(bestHit) cls+=" hl-best";
       else if(playedHit) cls+=" hl-played";
       let inner="";
-      if(board[sq]){ const [p,c]=board[sq]; cls+=" pc-"+c; inner=`<span class="pc">${GLYPH[c+p]}</span>`; }
+      if(board[sq]){ const [p,c]=board[sq];
+        inner=`<div class="pc" style="background-image:${pieceUri(p.toUpperCase(), c)}"></div>`; }
       html += `<div class="${cls}">${inner}</div>`;
     }
   }
-  document.getElementById("rev-board").innerHTML = html;
+  const el = document.getElementById("rev-board");
+  el.className = "board theme-" + boardTheme;
+  el.innerHTML = html;
 }
 
 function showCard(e, revealed){
@@ -770,6 +796,23 @@ document.getElementById("q-clear").addEventListener("click", async ()=>{
   await idbClear("items"); await setMeta({gamesCount:0, seenGames:[]});
   endReview(); await renderStats();
 });
+
+/* piece-set + board-color selectors */
+function rerenderCurrent(){
+  const panel = document.getElementById("rev-panel");
+  if(panel.classList.contains("hide") || !reviewList[reviewIdx]) return;
+  const revealed = !document.getElementById("rev-verdicts").classList.contains("hide");
+  const e = reviewList[reviewIdx];
+  renderBoard(e.fen_before, e.played_move, e.best_move, e.color, revealed);
+}
+(function initBoardSelectors(){
+  const ps = document.getElementById("set-pieces");
+  ps.innerHTML = PIECE_SETS.map(s => `<option value="${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join("");
+  ps.value = pieceSet;
+  document.getElementById("set-board").value = boardTheme;
+  ps.addEventListener("change", ()=>{ pieceSet = ps.value; localStorage.setItem("ct_piece_set", pieceSet); rerenderCurrent(); });
+  document.getElementById("set-board").addEventListener("change", (ev)=>{ boardTheme = ev.target.value; localStorage.setItem("ct_board_theme", boardTheme); rerenderCurrent(); });
+})();
 
 /* ============================ Service worker ============================ */
 if("serviceWorker" in navigator){

@@ -2,7 +2,7 @@
    Cache-first voor de app-shell zodat alles offline werkt.
    Lichess API-calls (cross-origin) gaan altijd direct naar het netwerk. */
 
-const VERSION = "ct-v0.3";
+const VERSION = "ct-v0.4";
 const SHELL = [
   "./",
   "./index.html",
@@ -11,6 +11,7 @@ const SHELL = [
   "./icon-512.png",
   "./apple-touch-icon.png",
   "./chess.min.js",
+  "./pieces.js",
   "./stockfish-18-lite-single.js",
   "./stockfish-18-lite-single.wasm"
 ];
