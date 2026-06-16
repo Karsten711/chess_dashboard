@@ -31,7 +31,7 @@
     padding:calc(env(safe-area-inset-top) + 1.4rem) 1.1rem
             calc(env(safe-area-inset-bottom) + 2rem);
   }
-  .wrap{max-width:900px; margin:0 auto;}
+  .wrap{max-width:990px; margin:0 auto;}
 
   header{margin:0 0 1.3rem 2px;}
   h1{font-family:var(--display); font-weight:600; font-size:2.1rem;
@@ -89,8 +89,9 @@
   .bar > i{display:block; height:100%; width:0; background:var(--board-dark); transition:width .2s;}
 
   /* board */
-  .board{display:grid; grid-template-columns:repeat(8,1fr); width:100%; aspect-ratio:1;
-    border-radius:10px; overflow:hidden; border:1px solid var(--border); margin:0.2rem 0 0.8rem;
+  .board{display:grid; grid-template-columns:repeat(8,1fr); width:100%; max-width:860px;
+    margin:0.2rem auto 0.8rem; aspect-ratio:1;
+    border-radius:10px; overflow:hidden; border:1px solid var(--border);
     user-select:none; --bl:#f0d9b5; --bd:#b58863;}
   .board.theme-brown{--bl:#f0d9b5; --bd:#b58863;}
   .board.theme-blue {--bl:#dee3e6; --bd:#8ca2ad;}
@@ -650,7 +651,7 @@ let boardTheme = localStorage.getItem("ct_board_theme") || "brown";
 function pieceUri(letterUpper, colorChar){
   const code = colorChar + letterUpper;                 // bv. wN, bK
   const svg = (PIECES[pieceSet] && PIECES[pieceSet][code]) || PIECES.cburnett[code];
-  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+  return `url('data:image/svg+xml,${encodeURIComponent(svg).replace(/'/g,"%27")}')`;
 }
 
 function renderBoard(fen, playedUci, bestUci, color, revealed){

@@ -2,7 +2,7 @@
    Cache-first voor de app-shell zodat alles offline werkt.
    Lichess API-calls (cross-origin) gaan altijd direct naar het netwerk. */
 
-const VERSION = "ct-v0.4";
+const VERSION = "ct-v0.5";
 const SHELL = [
   "./",
   "./index.html",
@@ -36,19 +36,32 @@ self.addEventListener("fetch", (event) => {
   if (req.method !== "GET") return;
 
   const url = new URL(req.url);
-  // Alleen onze eigen bestanden cachen; Lichess e.d. gaan naar het netwerk.
+  // Alleen onze eigen bestanden; Lichess e.d. gaan altijd naar het netwerk.
   if (url.origin !== self.location.origin) return;
 
-  event.respondWith(
-    caches.match(req).then((hit) => {
-      if (hit) return hit;
-      return fetch(req).then((res) => {
-        if (res && res.status === 200 && res.type === "basic") {
+  // Grote, onveranderlijke binary: cache-first (snel, scheelt data).
+  if (url.pathname.endsWith(".wasm")) {
+    event.respondWith(
+      caches.match(req).then((hit) => hit || fetch(req).then((res) => {
+        if (res && res.status === 200) {
           const copy = res.clone();
           caches.open(VERSION).then((cache) => cache.put(req, copy));
         }
         return res;
-      }).catch(() => caches.match("./index.html"));
-    })
+      }))
+    );
+    return;
+  }
+
+  // Rest (html/js/json/icons): network-first — updates verschijnen na herladen,
+  // zonder de app te herinstalleren, dus de queue in IndexedDB blijft staan.
+  event.respondWith(
+    fetch(req).then((res) => {
+      if (res && res.status === 200 && res.type === "basic") {
+        const copy = res.clone();
+        caches.open(VERSION).then((cache) => cache.put(req, copy));
+      }
+      return res;
+    }).catch(() => caches.match(req).then((hit) => hit || caches.match("./index.html")))
   );
 });
