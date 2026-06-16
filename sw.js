@@ -1,8 +1,8 @@
 /* Chess Trainer — service worker
-   Cache-first for the app shell so everything works offline.
-   Lichess API calls (cross-origin) always go straight to the network. */
+   Cache-first voor de app-shell zodat alles offline werkt.
+   Lichess API-calls (cross-origin) gaan altijd direct naar het netwerk. */
 
-const VERSION = "ct-v0.2";
+const VERSION = "ct-v0.3";
 const SHELL = [
   "./",
   "./index.html",
@@ -10,6 +10,7 @@ const SHELL = [
   "./icon-192.png",
   "./icon-512.png",
   "./apple-touch-icon.png",
+  "./chess.min.js",
   "./stockfish-18-lite-single.js",
   "./stockfish-18-lite-single.wasm"
 ];
@@ -41,7 +42,6 @@ self.addEventListener("fetch", (event) => {
     caches.match(req).then((hit) => {
       if (hit) return hit;
       return fetch(req).then((res) => {
-        // Geldige antwoorden toevoegen aan de cache voor de volgende keer.
         if (res && res.status === 200 && res.type === "basic") {
           const copy = res.clone();
           caches.open(VERSION).then((cache) => cache.put(req, copy));
