@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -151,33 +151,33 @@
 
   <header>
     <h1>Chess Trainer</h1>
-    <div class="sub">iPad-versie · Blunder Review · werkt offline</div>
+    <div class="sub">iPad version · Blunder Review · works offline</div>
   </header>
 
   <!-- LICHESS -->
   <section class="card">
     <h2><span class="dot" id="li-dot"></span> Lichess</h2>
-    <p class="lead">Plak een persoonlijk toegangstoken zodat de app je partijen kan ophalen.</p>
+    <p class="lead">Paste a personal access token so the app can fetch your games.</p>
     <div class="row">
       <input type="password" id="li-token" placeholder="lip_…" autocomplete="off" spellcheck="false">
-      <button id="li-save">Opslaan</button>
+      <button id="li-save">Save</button>
     </div>
-    <p class="status" id="li-status" style="margin-top:0.7rem">Niet verbonden.</p>
-    <p class="hint">Token via <a href="https://lichess.org/account/oauth/token" target="_blank" rel="noopener">lichess.org → API access tokens</a>. Alleen op dit toestel bewaard.</p>
+    <p class="status" id="li-status" style="margin-top:0.7rem">Not connected.</p>
+    <p class="hint">Token via <a href="https://lichess.org/account/oauth/token" target="_blank" rel="noopener">lichess.org → API access tokens</a>. Stored on this device only.</p>
   </section>
 
   <!-- BUILD -->
   <section class="card">
-    <h2><span class="dot busy" id="eng-dot"></span> Queue bouwen</h2>
-    <p class="lead">Haalt je laatste rated Classical-partijen op, analyseert elke eigen zet op diepte 16 en zet de fouten in je review-queue.</p>
+    <h2><span class="dot busy" id="eng-dot"></span> Build queue</h2>
+    <p class="lead">Fetches your latest rated Classical games, analyses each of your moves at depth 16, and adds the mistakes to your review queue.</p>
     <div class="row">
-      <span class="status">Partijen:</span>
+      <span class="status">Games:</span>
       <input type="number" id="bld-n" min="1" max="10" value="7">
-      <button id="bld-go" disabled>Bouw queue</button>
+      <button id="bld-go" disabled>Build queue</button>
     </div>
     <div class="progress hide" id="bld-prog"></div>
     <div class="bar hide" id="bld-bar"><i></i></div>
-    <p class="hint" id="eng-hint">Engine laden…</p>
+    <p class="hint" id="eng-hint">Loading engine…</p>
   </section>
 
   <!-- QUEUE / REVIEW -->
@@ -188,18 +188,18 @@
     <div id="q-home">
       <div class="row">
         <button id="rev-start" disabled>Start review</button>
-        <button class="ghost" id="q-clear">Wis queue</button>
+        <button class="ghost" id="q-clear">Clear queue</button>
       </div>
-      <p class="empty hide" id="q-empty">Queue is leeg. Bouw eerst een queue.</p>
+      <p class="empty hide" id="q-empty">Queue is empty. Build a queue first.</p>
     </div>
 
     <div id="rev-panel" class="hide">
       <div class="bset">
-        <label>Stukken<select id="set-pieces"></select></label>
-        <label>Bord<select id="set-board">
-          <option value="brown">Bruin</option>
-          <option value="blue">Blauw</option>
-          <option value="green">Groen</option>
+        <label>Pieces<select id="set-pieces"></select></label>
+        <label>Board<select id="set-board">
+          <option value="brown">Brown</option>
+          <option value="blue">Blue</option>
+          <option value="green">Green</option>
         </select></label>
       </div>
       <div class="board-wrap">
@@ -213,35 +213,35 @@
         <span class="meta-line" id="rev-context" style="margin-left:.4rem"></span>
       </div>
       <div class="moves">
-        <div class="movebox played"><div class="l">Jij speelde</div><div class="v" id="rev-played">—</div></div>
-        <div class="movebox best"><div class="l">Beste zet</div><div class="v" id="rev-best">—</div></div>
+        <div class="movebox played"><div class="l">You played</div><div class="v" id="rev-played">—</div></div>
+        <div class="movebox best"><div class="l">Best move</div><div class="v" id="rev-best">—</div></div>
       </div>
       <div class="meta-line" id="rev-eval"></div>
       <div class="chips" id="rev-chips"></div>
       <div class="desc" id="rev-desc"></div>
 
-      <button id="rev-reveal" style="width:100%; margin-top:1rem">Toon beste zet</button>
+      <button id="rev-reveal" style="width:100%; margin-top:1rem">Show best move</button>
       <div class="verdicts hide" id="rev-verdicts">
-        <button class="v-got"  data-v="solved">Gehad ✓</button>
-        <button class="v-miss" data-v="failed">Gemist ✗</button>
-        <button class="v-next" data-v="reviewed">Volgende →</button>
+        <button class="v-got"  data-v="solved">Got it ✓</button>
+        <button class="v-miss" data-v="failed">Missed ✗</button>
+        <button class="v-next" data-v="reviewed">Next →</button>
       </div>
     </div>
   </section>
 
   <!-- OFFLINE -->
   <section class="card">
-    <h2><span class="dot busy" id="sw-dot"></span> Offline &amp; installeren</h2>
-    <p class="status" id="sw-status">Offline-modus instellen…</p>
-    <p class="lead" style="margin-top:0.8rem;margin-bottom:0.2rem">Op je iPad-beginscherm zetten:</p>
+    <h2><span class="dot busy" id="sw-dot"></span> Offline &amp; install</h2>
+    <p class="status" id="sw-status">Setting up offline mode…</p>
+    <p class="lead" style="margin-top:0.8rem;margin-bottom:0.2rem">Add to your iPad home screen:</p>
     <ol class="steps">
-      <li>Open deze pagina in <b>Safari</b>.</li>
-      <li>Tik op <b>Deel</b>.</li>
-      <li>Kies <b>Zet op beginscherm</b>.</li>
+      <li>Open this page in <b>Safari</b>.</li>
+      <li>Tap <b>Share</b>.</li>
+      <li>Choose <b>Add to Home Screen</b>.</li>
     </ol>
   </section>
 
-  <footer>Block 2 — Blunder Review Queue · v0.3</footer>
+  <footer>Block 2 — Blunder Review Queue · v0.5</footer>
 </div>
 
 <script type="module">
@@ -283,11 +283,11 @@ async function initEngine(){
     await engine.until(l => l === "readyok" ? true : undefined);
     engineReady = true;
     dot.className = "dot ok";
-    hint.innerHTML = "Engine klaar — <b>Stockfish 18 Lite</b>, 3 lijnen, diepte 16.";
+    hint.innerHTML = "Engine ready — <b>Stockfish 18 Lite</b>, 3 lines, depth 16.";
     refreshControls();
   }catch(err){
     dot.className = "dot err";
-    hint.textContent = "Engine kon niet laden. Herlaad de pagina.";
+    hint.textContent = "Engine failed to load. Reload the page.";
   }
 }
 
@@ -426,25 +426,25 @@ function detectMotifs(fen, moveUci, scoreMate){
   return motifs;
 }
 function generateDescription(severity, motifs, threat){
-  if(motifs.includes("backRankMate"))    return "De beste zet geeft mat op de achterste rij";
-  if(motifs.includes("discoveredCheck")) return "De beste zet geeft aftrekschaak";
-  if(motifs.includes("fork"))            return "De beste zet wint materiaal met een vork";
-  if(motifs.includes("pin"))             return "De beste zet zet een stuk gepend";
-  if(motifs.includes("hangingPiece"))    return "De beste zet slaat een hangend stuk";
-  if(motifs.includes("materialGain"))    return "De beste zet wint materiaal";
-  if(motifs.includes("promotion"))       return "De beste zet promoveert een pion";
-  if(motifs.includes("check"))           return "De beste zet geeft schaak";
+  if(motifs.includes("backRankMate"))    return "Best move delivers back rank checkmate";
+  if(motifs.includes("discoveredCheck")) return "Best move creates a discovered check";
+  if(motifs.includes("fork"))            return "Best move wins material with a fork";
+  if(motifs.includes("pin"))             return "Best move creates a pin";
+  if(motifs.includes("hangingPiece"))    return "Best move captures a hanging piece";
+  if(motifs.includes("materialGain"))    return "Best move wins material";
+  if(motifs.includes("promotion"))       return "Best move promotes a pawn";
+  if(motifs.includes("check"))           return "Best move delivers check";
   if(threat && threat.length){
-    const t = {fork:"een vork", pin:"een penning", hangingPiece:"een hangend stuk",
-      backRankMate:"mat op de achterste rij", materialGain:"materiaalverlies"};
+    const t = {fork:"a fork", pin:"a pin", hangingPiece:"a hanging piece",
+      backRankMate:"a back rank mate", materialGain:"material"};
     for(const m of ["backRankMate","fork","pin","hangingPiece","materialGain"]){
-      if(threat.includes(m)) return "Je zet stond " + t[m] + " toe";
+      if(threat.includes(m)) return "Your move allowed " + t[m];
     }
   }
-  const msgs = {blunder:"Een blunder — er was een veel betere zet",
-    mistake:"Een fout — er was een duidelijk betere zet",
-    inaccuracy:"Kleine onnauwkeurigheid — er was een betere zet"};
-  return msgs[severity] || "Er was een betere zet";
+  const msgs = {blunder:"You blundered — a much better move was available",
+    mistake:"You made a mistake — a significantly better move was available",
+    inaccuracy:"Small inaccuracy — a better move was available"};
+  return msgs[severity] || "A better move was available";
 }
 
 /* ===================== SM-2 op partijtal (port chess_server.py) ===================== */
@@ -556,19 +556,19 @@ let building=false;
 async function buildQueue(){
   if(building || !engineReady) return;
   const token = localStorage.getItem(TOKEN_KEY), user = localStorage.getItem(USER_KEY);
-  if(!token || !user){ setBuildMsg("Eerst een token opslaan."); return; }
+  if(!token || !user){ setBuildMsg("Save a token first."); return; }
   const n = Math.max(1, Math.min(10, parseInt(document.getElementById("bld-n").value,10)||7));
   building=true; refreshControls();
   const prog = document.getElementById("bld-prog"), bar=document.getElementById("bld-bar");
   prog.classList.remove("hide"); bar.classList.remove("hide");
-  setBuildMsg("Partijen ophalen bij Lichess…"); setBar(2);
+  setBuildMsg("Fetching games from Lichess…"); setBar(2);
 
   let pgnText;
   try{ pgnText = await fetchGamesPGN(token, user, n); }
-  catch(e){ setBuildMsg("Ophalen mislukt: "+e.message); building=false; refreshControls(); return; }
+  catch(e){ setBuildMsg("Fetch failed: "+e.message); building=false; refreshControls(); return; }
 
   const chunks = splitPGN(pgnText);
-  if(chunks.length===0){ setBuildMsg("Geen partijen gevonden."); building=false; refreshControls(); return; }
+  if(chunks.length===0){ setBuildMsg("No games found."); building=false; refreshControls(); return; }
 
   const meta = await getMeta();
   const seen = new Set(meta.seenGames);
@@ -603,7 +603,7 @@ async function buildQueue(){
       const moveNumber = Math.floor(ply/2)+1;
       const id = gameId + "_" + ply;
 
-      setBuildMsg(`Partij ${gi+1}/${chunks.length} · zet ${moveNumber} · gevonden: ${added}`);
+      setBuildMsg(`Game ${gi+1}/${chunks.length} · move ${moveNumber} · found: ${added}`);
       setBar(2 + (gi/chunks.length)*96 + (ply/Math.max(moves.length,1))*(96/chunks.length));
 
       if(existing.has(id)){ replay.move(m.san); continue; }
@@ -649,8 +649,8 @@ async function buildQueue(){
 
   await setMeta(meta);
   setBar(100);
-  if(added===0) setBuildMsg("Geen nieuwe fouten — deze partijen staan al in de queue. Speel een nieuwe partij, of wis de queue om ze opnieuw te analyseren.");
-  else setBuildMsg(`Klaar — ${added} nieuwe foutmomenten toegevoegd (partijtal: ${meta.gamesCount}).`);
+  if(added===0) setBuildMsg("No new mistakes — these games are already in the queue. Play a new game, or clear the queue to re-analyse them.");
+  else setBuildMsg(`Done — ${added} new mistakes added (game count: ${meta.gamesCount}).`);
   building=false; refreshControls(); await renderStats();
 }
 function setBuildMsg(t){ document.getElementById("bld-prog").textContent = t; }
@@ -701,9 +701,9 @@ function renderBoard(fen, playedUci, bestUci, color, revealed){
 function showCard(e, revealed){
   document.getElementById("rev-badge").className = "badge " + displaySeverity(e);
   document.getElementById("rev-badge").textContent =
-    ({blunder:"Blunder",mistake:"Fout",inaccuracy:"Onnauwkeurig"})[displaySeverity(e)];
+    ({blunder:"Blunder",mistake:"Mistake",inaccuracy:"Inaccuracy"})[displaySeverity(e)];
   document.getElementById("rev-context").textContent =
-    `tegen ${e.opponent} · zet ${e.move_number} · ${e.opening || e.phase}`;
+    `vs ${e.opponent} · move ${e.move_number} · ${e.opening || e.phase}`;
   document.getElementById("rev-played").textContent = prettyUci(e.played_move);
   renderBoard(e.fen_before, e.played_move, e.best_move, e.color, revealed);
   const evalEl = document.getElementById("rev-eval");
@@ -712,14 +712,14 @@ function showCard(e, revealed){
   const best = document.getElementById("rev-best");
   if(revealed){
     best.textContent = prettyUci(e.best_move);
-    evalEl.innerHTML = `Eval <b>${fmtEval(e.eval_before)}</b> → <b>${fmtEval(e.eval_after)}</b> · verlies <b>${(e.cp_loss/100).toFixed(2)}</b> · win% −${e.winloss_pp}`;
+    evalEl.innerHTML = `Eval <b>${fmtEval(e.eval_before)}</b> → <b>${fmtEval(e.eval_after)}</b> · loss <b>${(e.cp_loss/100).toFixed(2)}</b> · win% −${e.winloss_pp}`;
     chips.innerHTML = (e.motifs||[]).map(m=>`<span class="chip">${m}</span>`).join("");
     desc.textContent = e.description || "";
     document.getElementById("rev-reveal").classList.add("hide");
     document.getElementById("rev-verdicts").classList.remove("hide");
   } else {
     best.textContent = "—";
-    evalEl.innerHTML = `Jij stond <b>${fmtEval(e.eval_before)}</b> en speelde een zet die ${displaySeverity(e)==="blunder"?"een blunder":"niet best"} was. Wat was beter?`;
+    evalEl.innerHTML = `You were <b>${fmtEval(e.eval_before)}</b> and played a ${displaySeverity(e)==="blunder"?"blunder":"weak move"}. What was better?`;
     chips.innerHTML = ""; desc.textContent = "";
     document.getElementById("rev-reveal").classList.remove("hide");
     document.getElementById("rev-verdicts").classList.add("hide");
@@ -762,11 +762,11 @@ async function renderStats(){
       if(s==="blunder")nBl++; else if(s==="mistake")nMi++; else nIn++; }
   }
   document.getElementById("q-stats").innerHTML =
-    `<div class="stat"><div class="n">${items.length}</div><div class="l">totaal</div></div>`+
-    `<div class="stat"><div class="n">${nDue}</div><div class="l">due nu</div></div>`+
-    `<div class="stat blunder"><div class="n">${nBl}</div><div class="l">blunder</div></div>`+
-    `<div class="stat mistake"><div class="n">${nMi}</div><div class="l">fout</div></div>`+
-    `<div class="stat"><div class="n">${nIn}</div><div class="l">onnauwk.</div></div>`;
+    `<div class="stat"><div class="n">${items.length}</div><div class="l">total</div></div>`+
+    `<div class="stat"><div class="n">${nDue}</div><div class="l">due now</div></div>`+
+    `<div class="stat blunder"><div class="n">${nBl}</div><div class="l">blunders</div></div>`+
+    `<div class="stat mistake"><div class="n">${nMi}</div><div class="l">mistakes</div></div>`+
+    `<div class="stat"><div class="n">${nIn}</div><div class="l">inaccur.</div></div>`;
   const empty = document.getElementById("q-empty");
   empty.classList.toggle("hide", items.length>0);
   document.getElementById("rev-start").disabled = !(nDue>0);
@@ -776,18 +776,18 @@ async function renderStats(){
 
 /* ============================ Lichess token ============================ */
 function showConnected(name){ document.getElementById("li-dot").className="dot ok";
-  document.getElementById("li-status").innerHTML = "Verbonden als <b>"+name+"</b>."; }
-function showNotConnected(msg){ document.getElementById("li-dot").className="dot"+(msg&&msg!=="Controleren…"?" err":"");
-  document.getElementById("li-status").textContent = msg || "Niet verbonden."; }
+  document.getElementById("li-status").innerHTML = "Connected as <b>"+name+"</b>."; }
+function showNotConnected(msg){ document.getElementById("li-dot").className="dot"+(msg&&msg!=="Checking…"?" err":"");
+  document.getElementById("li-status").textContent = msg || "Not connected."; }
 async function verifyToken(token){
-  showNotConnected("Controleren…"); document.getElementById("li-dot").className="dot busy";
+  showNotConnected("Checking…"); document.getElementById("li-dot").className="dot busy";
   try{
     const res = await fetch("https://lichess.org/api/account",{headers:{Authorization:"Bearer "+token}});
-    if(!res.ok){ showNotConnected("Token geweigerd (status "+res.status+")."); return false; }
+    if(!res.ok){ showNotConnected("Token rejected (status "+res.status+")."); return false; }
     const data = await res.json();
     localStorage.setItem(USER_KEY, data.username||"");
     showConnected(data.username||"onbekend"); refreshControls(); return true;
-  }catch(e){ showNotConnected("Kon Lichess niet bereiken — check je verbinding."); return false; }
+  }catch(e){ showNotConnected("Couldn't reach Lichess — check your connection."); return false; }
 }
 
 /* ============================ Controls ============================ */
@@ -798,7 +798,7 @@ function refreshControls(){
 
 document.getElementById("li-save").addEventListener("click", async ()=>{
   const input = document.getElementById("li-token"); const token = input.value.trim();
-  if(!token){ showNotConnected("Plak eerst een token."); return; }
+  if(!token){ showNotConnected("Paste a token first."); return; }
   if(await verifyToken(token)){ localStorage.setItem(TOKEN_KEY, token); input.value=""; }
 });
 document.getElementById("bld-go").addEventListener("click", buildQueue);
@@ -807,7 +807,7 @@ document.getElementById("rev-reveal").addEventListener("click", ()=> showCard(re
 document.querySelectorAll("#rev-verdicts button").forEach(b=>
   b.addEventListener("click", ()=> verdict(b.dataset.v)));
 document.getElementById("q-clear").addEventListener("click", async ()=>{
-  if(!confirm("Hele queue wissen?")) return;
+  if(!confirm("Clear the entire queue?")) return;
   await idbClear("items"); await setMeta({gamesCount:0, seenGames:[]});
   endReview(); await renderStats();
 });
@@ -834,14 +834,14 @@ if("serviceWorker" in navigator){
   navigator.serviceWorker.register("./sw.js").then((reg)=>{
     const set=(cls,txt)=>{ document.getElementById("sw-dot").className="dot "+cls;
       document.getElementById("sw-status").innerHTML=txt; };
-    if(navigator.serviceWorker.controller) set("ok","Offline-modus <b>actief</b> — gecachet op dit toestel.");
-    else { set("busy","Cachen voor offline gebruik…");
-      navigator.serviceWorker.ready.then(()=> set("ok","Offline-modus <b>actief</b> — herlaad eenmaal om te voltooien.")); }
+    if(navigator.serviceWorker.controller) set("ok","Offline mode <b>active</b> — cached on this device.");
+    else { set("busy","Caching for offline use…");
+      navigator.serviceWorker.ready.then(()=> set("ok","Offline mode <b>active</b> — reload once to finish.")); }
   }).catch(()=>{ document.getElementById("sw-dot").className="dot err";
-    document.getElementById("sw-status").textContent="Offline-modus vereist een https-adres."; });
+    document.getElementById("sw-status").textContent="Offline mode requires an https address."; });
 } else {
   document.getElementById("sw-dot").className="dot err";
-  document.getElementById("sw-status").textContent="Deze browser heeft geen offline-ondersteuning.";
+  document.getElementById("sw-status").textContent="This browser has no offline support.";
 }
 
 /* ============================ Start ============================ */
