@@ -237,12 +237,17 @@ document.getElementById("eng-test").addEventListener("click", async ()=>{
   btn.disabled = true; btn.textContent = "Thinking…";
   // Najdorf Sicilian, white to move — a real middlegame position
   const fen = "rnbqkb1r/1p2pppp/p2p1n2/8/3NP3/2N5/PPP2PPP/R1BQKB1R w KQkq - 0 6";
-  const r = await analyse(fen, 14);
-  document.getElementById("eng-best").textContent = "Best move: " + prettyMove(r.bestmove);
-  document.getElementById("eng-detail").textContent =
-    "Evaluation " + fmtScore(r.score) + " · searched to depth " + r.depth;
+  const setMsg=(x,y)=>{document.getElementById("eng-best").textContent=x;document.getElementById("eng-detail").textContent=y||"";};
+  engine.send("setoption name MultiPV value 3");  /* BENCH-1.79 */
+  const bench=async(d)=>{engine.send("ucinewgame");engine.send("isready");await engine.until(l=>l==="readyok"?true:undefined);const t0=performance.now();await analyse(fen,d);return (performance.now()-t0)/1000;};
   box.classList.add("show");
-  btn.disabled = false; btn.textContent = "Test again";
+  setMsg("Depth 12 loopt…","3 lijnen (MultiPV 3)");
+  const s12=await bench(12);
+  setMsg("Depth 12: "+s12.toFixed(1)+" s","Depth 16 loopt…");
+  const s16=await bench(16);
+  setMsg("Depth 12: "+s12.toFixed(1)+" s   ·   Depth 16: "+s16.toFixed(1)+" s","3 lijnen · 1 middenspelstand · koude tabel per meting");
+  engine.send("setoption name MultiPV value 1");
+  btn.disabled=false; btn.textContent="Opnieuw meten";
 });
 
 /* ---------- Lichess token ---------- */

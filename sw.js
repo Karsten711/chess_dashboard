@@ -2,7 +2,7 @@
    Cache-first for the app shell so everything works offline.
    Lichess API calls (cross-origin) always go straight to the network. */
 
-const VERSION = "ct-v0.1";
+const VERSION = "ct-v0.2";
 const SHELL = [
   "./",
   "./index.html",
