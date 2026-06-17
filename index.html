@@ -8,6 +8,9 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <meta name="theme-color" content="#6b5d4a">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="./favicon-16.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Chess Trainer">
@@ -74,9 +77,9 @@
   .coin{display:inline-block; width:14px; height:14px; border-radius:50%; border:1px solid var(--border); vertical-align:-2px;}
   .coin.white{background:#f2efe9;} .coin.black{background:#3a342c;}
   .res-w{color:var(--green); font-weight:600;} .res-l{color:var(--red);} .res-d{color:var(--muted);}
-  .tp-grid{display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:1fr; gap:0.7rem; margin-top:0.4rem;}
+  .tp-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:0.7rem; margin-top:0.4rem;}
   @media(max-width:600px){ .tp-grid{grid-template-columns:repeat(2,1fr);} }
-  .tp-tile{position:relative; border:1px solid var(--border); border-radius:14px; padding:0.9rem 0.6rem 0.7rem; text-decoration:none; color:#fff; display:flex; flex-direction:column; gap:0.15rem; height:100%; min-height:108px; box-sizing:border-box; cursor:pointer; text-align:center;}
+  .tp-tile{position:relative; border:1px solid var(--border); border-radius:14px; padding:0.9rem 0.6rem 0.7rem; text-decoration:none; color:#fff; display:flex; flex-direction:column; gap:0.15rem; height:120px; overflow:hidden; box-sizing:border-box; cursor:pointer; text-align:center;}
   .tp-tile:hover{filter:brightness(0.94);}
   .tp-tile .rank{position:absolute; top:7px; left:7px; width:23px; height:23px; border:1px solid rgba(255,255,255,0.7); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.64rem; font-weight:600;}
   .tp-tile .lbl{font-family:var(--display); font-size:1rem; font-weight:700; line-height:1.12;}
@@ -232,6 +235,17 @@
   .gmt-reason{font-size:0.9rem; color:var(--muted); line-height:1.5;}
   .gmt-foot{display:flex; gap:0.5rem; margin-top:0.8rem;}
   .gmt-foot button{flex:1;}
+  .top-row{display:grid; grid-template-columns:1fr 1.7fr; gap:0.95rem; align-items:start; margin-bottom:0.95rem;}
+  .top-row > .card{margin-bottom:0;}
+  @media(max-width:860px){ .top-row{grid-template-columns:1fr;} }
+  .stat-row{display:grid; grid-template-columns:repeat(5,1fr); gap:0.5rem; margin-bottom:0.8rem;}
+  @media(max-width:560px){ .stat-row{grid-template-columns:repeat(3,1fr);} }
+  .stat{border:1px solid var(--border); border-radius:12px; padding:0.5rem 0.35rem; text-align:center; background:var(--tile2);}
+  .stat .v{display:block; font-family:var(--display); font-size:1.25rem; font-weight:700; color:var(--board-dark); line-height:1.1;}
+  .stat .l{font-size:0.56rem; text-transform:uppercase; letter-spacing:.04em; color:var(--hint);}
+  .stat.sg{background:rgba(42,122,74,0.14);} .stat.sg .v{color:#2a7a4a;}
+  .stat.sb{background:rgba(42,95,143,0.14);} .stat.sb .v{color:#2a5f8f;}
+  .stat.sp{background:rgba(212,104,32,0.14);} .stat.sp .v{color:#b4561a;}
 </style>
 </head>
 <body>
@@ -249,6 +263,7 @@
   </header>
 
   <!-- RATED GAMES -->
+  <div class="top-row">
   <!-- TODAY'S TRAINING -->
   <section class="card" id="sec-ttp">
     <h2><span class="dot" id="ttp-dot"></span> Today's Training</h2>
@@ -258,6 +273,29 @@
     </div>
     <div class="ttp-list" id="ttp-list"></div>
   </section>
+
+  <!-- PROFILE & RATINGS -->
+  <section class="card" id="sec-ratings">
+    <h2><span class="dot" id="pr-dot"></span> Profile &amp; Ratings</h2>
+    <p class="tile-msg" id="pr-msg">Connect your Lichess token to load your stats.</p>
+    <div id="pr-loaded" class="hide">
+      <div class="stat-row">
+        <div class="stat"><span class="v" id="elo-cl">—</span><span class="l">Classical</span></div>
+        <div class="stat sg"><span class="v" id="elo-pz">—</span><span class="l">Puzzle</span></div>
+        <div class="stat sb"><span class="v" id="st-acc">—</span><span class="l">Accuracy</span></div>
+        <div class="stat"><span class="v" id="st-bl">—</span><span class="l">Blunder score</span></div>
+        <div class="stat sp"><span class="v" id="st-cp">—</span><span class="l">CP loss</span></div>
+      </div>
+      <div class="chips" id="rg-chips">
+        <span class="chip off" data-m="rating"><span class="sw" style="background:#6b5d4a"></span>Rating</span>
+        <span class="chip" data-m="accuracy"><span class="sw" style="background:#2a5f8f"></span>Accuracy</span>
+        <span class="chip off" data-m="cp"><span class="sw" style="background:#c0321a"></span>CP loss</span>
+        <span class="chip off" data-m="blunder"><span class="sw" style="background:#7a3a8a"></span>Blunder score</span>
+      </div>
+      <div class="chart-box" style="height:400px"><canvas id="rg-chart" role="img" aria-label="Per-game metrics">Per-game rating, accuracy and error metrics.</canvas></div>
+    </div>
+  </section>
+  </div>
 
   <!-- GM FOCUS / GMT TRAINER -->
   <div class="gmt-overlay" id="gmt-overlay">
@@ -292,19 +330,9 @@
   </div>
 
   <section class="card" id="sec-rg">
-    <h2><span class="dot" id="rg-dot"></span> Rated Games<span class="elo-mini" id="rg-elo">
-      <span class="em"><span class="emn" id="elo-cl">—</span><span class="eml">Classical</span></span>
-      <span class="em"><span class="emn" id="elo-pz">—</span><span class="eml">Puzzle</span></span>
-    </span></h2>
+    <h2><span class="dot" id="rg-dot"></span> Rated Games</h2>
     <p class="tile-msg" id="rg-msg">Connect your Lichess token to load your games.</p>
     <div id="rg-loaded" class="hide">
-      <div class="chips" id="rg-chips">
-        <span class="chip off" data-m="rating"><span class="sw" style="background:#6b5d4a"></span>Rating</span>
-        <span class="chip" data-m="accuracy"><span class="sw" style="background:#2a5f8f"></span>Accuracy</span>
-        <span class="chip off" data-m="cp"><span class="sw" style="background:#c0321a"></span>CP loss</span>
-        <span class="chip off" data-m="blunder"><span class="sw" style="background:#7a3a8a"></span>Blunder score</span>
-      </div>
-      <div class="chart-box" style="height:400px"><canvas id="rg-chart" role="img" aria-label="Per-game metrics">Per-game rating, accuracy and error metrics.</canvas></div>
       <div class="rg-wrap">
         <table class="rg" id="rg-table"><thead><tr>
           <th data-c="date">Date</th><th data-c="color">Col</th><th data-c="opp">Opponent</th>
@@ -1310,6 +1338,15 @@ function meSide(g){
   return { isWhite, me:isWhite?pw:pb, opp:isWhite?pb:pw };
 }
 
+function updateStatPills(){
+  const acc=document.getElementById("st-acc"), bl=document.getElementById("st-bl"), cp=document.getElementById("st-cp");
+  let a=null;
+  for(const x of prGames){ const me=meSide(x).me; if(me&&me.analysis){ a=me.analysis; break; } }
+  if(acc) acc.textContent=a&&a.accuracy!=null?a.accuracy+"%":"—";
+  if(bl)  bl.textContent=a?(3*(a.blunder||0)+2*(a.mistake||0)+1*(a.inaccuracy||0)):"—";
+  if(cp)  cp.textContent=a&&a.acpl!=null?a.acpl:"—";
+}
+
 async function loadRatings(user){
   try{
     const u=await (await liFetch(`https://lichess.org/api/user/${encodeURIComponent(user)}`)).json();
@@ -1318,6 +1355,8 @@ async function loadRatings(user){
     const ce=document.getElementById("elo-cl"), pe=document.getElementById("elo-pz");
     if(ce) ce.textContent=cl!=null?cl:"—";
     if(pe) pe.textContent=pz!=null?pz:"—";
+    const prL=document.getElementById("pr-loaded"), prM=document.getElementById("pr-msg");
+    if(prL)prL.classList.remove("hide"); if(prM)prM.classList.add("hide");
   }catch(e){}
 }
 
@@ -1332,8 +1371,10 @@ async function loadGamesData(user){
     if(!res.ok) throw new Error("HTTP "+res.status);
     const text=await res.text();
     prGames=text.trim().split("\n").filter(Boolean).map(l=>JSON.parse(l));
-    renderRatedGames(); buildGamesChart(); renderOpeningExplorer();
+    renderRatedGames(); buildGamesChart(); renderOpeningExplorer(); updateStatPills();
     msg.classList.add("hide"); loaded.classList.remove("hide"); dot.className="dot ok";
+    const prL=document.getElementById("pr-loaded"), prM=document.getElementById("pr-msg");
+    if(prL)prL.classList.remove("hide"); if(prM)prM.classList.add("hide");
   }catch(e){
     dot.className="dot err"; loaded.classList.add("hide"); msg.classList.remove("hide");
     msg.textContent = navigator.onLine ? ("Couldn't load games ("+e.message+").") : "Offline — connect to load your games.";
