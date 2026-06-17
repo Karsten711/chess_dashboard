@@ -48,6 +48,23 @@
     header{flex-direction:column; gap:0.6rem;}
     .head-quote{text-align:left; align-self:stretch;}
   }
+  /* ---- Data dashboard (pass 1) ---- */
+  .pr-head{display:flex; flex-wrap:wrap; align-items:baseline; gap:0.4rem 1rem; margin:0.2rem 0 0.2rem;}
+  .pr-name{font-family:var(--display); font-size:1.3rem; font-weight:600; color:var(--board-dark);}
+  .pr-title{font-size:0.7rem; font-weight:700; letter-spacing:.04em; color:#fff; background:var(--board-dark); padding:0.1rem 0.45rem; border-radius:6px;}
+  .pr-since{font-size:0.84rem; color:var(--hint);}
+  .pr-stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(92px,1fr)); gap:0.6rem; margin:0.7rem 0 0.2rem;}
+  .pr-stat{background:var(--tile2); border-radius:12px; padding:0.55rem 0.7rem;}
+  .pr-stat .n{font-family:var(--display); font-size:1.2rem; font-weight:600; color:var(--text);}
+  .pr-stat .l{font-size:0.68rem; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); margin-top:0.1rem;}
+  .chips{display:flex; flex-wrap:wrap; gap:0.5rem; margin:0.9rem 0 0.1rem;}
+  .chip{font-size:0.82rem; padding:0.3rem 0.7rem; border-radius:999px; border:1px solid var(--border); cursor:pointer; user-select:none; background:var(--tile2); color:var(--text); display:flex; align-items:center; gap:0.4rem;}
+  .chip .sw{width:10px; height:10px; border-radius:3px; display:inline-block;}
+  .chip.off{opacity:0.4;}
+  .chart-box{position:relative; width:100%; margin-top:0.7rem;}
+  .pz-sum{display:flex; flex-wrap:wrap; gap:0.3rem 1.2rem; font-size:0.88rem; color:var(--muted); margin:0.1rem 0 0.5rem;}
+  .pz-sum b{color:var(--text);}
+  .tile-msg{font-size:0.88rem; color:var(--muted); padding:0.3rem 0;}
 
   .card{background:var(--tile); border:1px solid var(--border);
     border-radius:var(--radius); padding:1.15rem 1.2rem;
@@ -183,6 +200,35 @@
     <p class="hint">Token via <a href="https://lichess.org/account/oauth/token" target="_blank" rel="noopener">lichess.org → API access tokens</a>. Stored on this device only.</p>
   </section>
 
+  <!-- PROFILE & RATINGS -->
+  <section class="card" id="sec-pr">
+    <h2><span class="dot" id="pr-dot"></span> Profile &amp; Ratings</h2>
+    <p class="tile-msg" id="pr-msg">Connect your Lichess token to load your profile.</p>
+    <div id="pr-loaded" class="hide">
+      <div class="pr-head">
+        <span class="pr-name" id="pr-name">—</span>
+        <span class="pr-title hide" id="pr-title"></span>
+        <span class="pr-since" id="pr-since"></span>
+      </div>
+      <div class="pr-stats" id="pr-stats"></div>
+      <div class="chips" id="pr-chips">
+        <span class="chip" data-series="classical"><span class="sw" style="background:#6b5d4a"></span>Classical</span>
+        <span class="chip" data-series="puzzle"><span class="sw" style="background:#2a7a4a"></span>Puzzle</span>
+      </div>
+      <div class="chart-box" style="height:240px"><canvas id="pr-chart" role="img" aria-label="Rating history">Your Classical and Puzzle rating over time.</canvas></div>
+    </div>
+  </section>
+
+  <!-- PUZZLE THEMES -->
+  <section class="card" id="sec-pz">
+    <h2><span class="dot" id="pz-dot"></span> Puzzle Themes</h2>
+    <p class="tile-msg" id="pz-msg">Connect your Lichess token to load your puzzle themes.</p>
+    <div id="pz-loaded" class="hide">
+      <div class="pz-sum" id="pz-sum"></div>
+      <div class="chart-box" id="pz-chart-box" style="height:300px"><canvas id="pz-chart" role="img" aria-label="Puzzle theme win rates">Win rate per puzzle theme over the last 90 days.</canvas></div>
+    </div>
+  </section>
+
   <!-- BUILD -->
   <section class="card">
     <h2><span class="dot busy" id="eng-dot"></span> Build queue</h2>
@@ -261,6 +307,7 @@
   <footer>Block 2 — Blunder Review Queue · v0.5</footer>
 </div>
 
+<script src="chart.umd.js"></script>
 <script type="module">
 "use strict";
 import { Chess } from "./chess.min.js";
@@ -816,7 +863,7 @@ function refreshControls(){
 document.getElementById("li-save").addEventListener("click", async ()=>{
   const input = document.getElementById("li-token"); const token = input.value.trim();
   if(!token){ showNotConnected("Paste a token first."); return; }
-  if(await verifyToken(token)){ localStorage.setItem(TOKEN_KEY, token); input.value=""; }
+  if(await verifyToken(token)){ localStorage.setItem(TOKEN_KEY, token); input.value=""; loadDashboardTiles(); }
 });
 document.getElementById("bld-go").addEventListener("click", buildQueue);
 document.getElementById("rev-start").addEventListener("click", startReview);
@@ -970,8 +1017,151 @@ if("serviceWorker" in navigator){
   document.getElementById("sw-status").textContent="This browser has no offline support.";
 }
 
+/* ============================ Data dashboard (pass 1) ============================ */
+const THEME_LABELS = {
+  fork:'Fork', pin:'Pin', skewer:'Skewer', discoveredAttack:'Discovered Attack',
+  doubleCheck:'Double Check', sacrifice:'Sacrifice', mateIn1:'Mate in 1',
+  mateIn2:'Mate in 2', mateIn3:'Mate in 3', middlegame:'Middlegame',
+  endgame:'Endgame', opening:'Opening', mate:'Mate', crushing:'Crushing',
+  hangingPiece:'Hanging Piece', backRankMate:'Back Rank Mate',
+  kingsideAttack:'Kingside Attack', queensideAttack:'Queenside Attack',
+  equality:'Equality', advantage:'Advantage', master:'Master Game',
+  long:'Long Puzzle', short:'Short Puzzle', oneMove:'One Move',
+  trappedPiece:'Trapped Piece', exposedKing:'Exposed King',
+  rookEndgame:'Rook Endgame', bishopEndgame:'Bishop Endgame',
+  pawnEndgame:'Pawn Endgame', queenEndgame:'Queen Endgame',
+  knightEndgame:'Knight Endgame', interference:'Interference',
+  deflection:'Deflection', attraction:'Attraction', clearance:'Clearance',
+  zugzwang:'Zugzwang', quietMove:'Quiet Move', defensiveMove:'Defensive Move',
+  capturingDefender:'Capturing Defender', xRayAttack:'X-Ray Attack',
+  intermezzo:'Intermezzo', promotion:'Promotion', underPromotion:'Underpromotion',
+  enPassant:'En Passant', advancedPawn:'Advanced Pawn',
+  discoveredCheck:'Discovered Check', attackingF2F7:'Attacking f2/f7'
+};
+function dGetNb(o){ if(!o) return 0; const r=o.results||o; return r.nb||o.nb||0; }
+function dGetWins(o){ if(!o) return 0; const r=o.results||o; return (r.win||0)+(r.firstWins||0)+(r.replayWins||0); }
+function dGetPerf(o){ if(!o) return null; const p=(o.performance!=null)?o.performance:(o.results&&o.results.performance); return (p!=null)?p:null; }
+
+let prChart=null, pzChart=null, prClPts=[], prPzPts=[];
+const prShow = { classical:true, puzzle:true };
+
+async function liFetch(url){
+  const token = localStorage.getItem(TOKEN_KEY)||"";
+  const res = await fetch(url, { headers: token?{Authorization:"Bearer "+token}:{} });
+  if(!res.ok) throw new Error("HTTP "+res.status);
+  return res;
+}
+
+function loadDashboardTiles(){
+  const user = localStorage.getItem(USER_KEY)||"";
+  if(!user) return;
+  loadProfileRatings(user);
+  loadPuzzleThemes();
+}
+
+function dStat(n,l){ return `<div class="pr-stat"><div class="n">${n}</div><div class="l">${l}</div></div>`; }
+
+async function loadProfileRatings(user){
+  const dot=document.getElementById("pr-dot"), msg=document.getElementById("pr-msg"),
+        loaded=document.getElementById("pr-loaded");
+  dot.className="dot busy";
+  try{
+    const u  = await (await liFetch(`https://lichess.org/api/user/${encodeURIComponent(user)}`)).json();
+    const rh = await (await liFetch(`https://lichess.org/api/user/${encodeURIComponent(user)}/rating-history`)).json();
+    document.getElementById("pr-name").textContent = u.username||user;
+    const tEl=document.getElementById("pr-title");
+    if(u.title){ tEl.textContent=u.title; tEl.classList.remove("hide"); } else tEl.classList.add("hide");
+    if(u.createdAt){ const d=new Date(u.createdAt);
+      document.getElementById("pr-since").textContent="member since "+d.toLocaleDateString("en",{month:"short",year:"numeric"}); }
+    const perfs=u.perfs||{}, cl=perfs.classical||{}, pz=perfs.puzzle||{}, cnt=u.count||{};
+    document.getElementById("pr-stats").innerHTML =
+      dStat(cl.rating!=null?cl.rating:"—","Classical") +
+      dStat(pz.rating!=null?pz.rating:"—","Puzzle") +
+      dStat(cnt.rated!=null?cnt.rated:(cnt.all!=null?cnt.all:"—"),"Rated games") +
+      dStat((cnt.win||0)+" / "+(cnt.loss||0)+" / "+(cnt.draw||0),"W / L / D");
+    const series = name => { const e=(rh||[]).find(x=>x.name===name);
+      return (e&&e.points)?e.points.map(p=>({x:Date.UTC(p[0],p[1],p[2]), y:p[3]})):[]; };
+    prClPts=series("Classical"); prPzPts=series("Puzzles");
+    buildRatingChart();
+    msg.classList.add("hide"); loaded.classList.remove("hide"); dot.className="dot ok";
+  }catch(e){
+    dot.className="dot err"; loaded.classList.add("hide"); msg.classList.remove("hide");
+    msg.textContent = navigator.onLine ? ("Couldn't load profile ("+e.message+").")
+                                        : "Offline — connect to load your profile.";
+  }
+}
+
+function buildRatingChart(){
+  if(!window.Chart) return;
+  if(prChart) prChart.destroy();
+  const ds=[];
+  if(prShow.classical) ds.push({label:"Classical",data:prClPts,borderColor:"#6b5d4a",backgroundColor:"#6b5d4a",borderWidth:2.5,pointRadius:0,pointHoverRadius:4,tension:0.2,yAxisID:"y"});
+  if(prShow.puzzle)    ds.push({label:"Puzzle",data:prPzPts,borderColor:"#2a7a4a",backgroundColor:"#2a7a4a",borderWidth:1.8,borderDash:[5,4],pointRadius:0,pointHoverRadius:4,tension:0.2,yAxisID:"y2"});
+  prChart=new Chart(document.getElementById("pr-chart"),{type:"line",data:{datasets:ds},
+    options:{responsive:true,maintainAspectRatio:false,
+      interaction:{mode:"index",intersect:false},
+      plugins:{legend:{display:false},
+        tooltip:{backgroundColor:"#2a2318",titleColor:"#faf8f4",bodyColor:"#faf8f4",padding:8,
+          callbacks:{title:its=>its.length?new Date(its[0].parsed.x).toLocaleDateString("en",{day:"numeric",month:"short",year:"numeric"}):"",
+                     label:c=>c.dataset.label+": "+c.parsed.y}}},
+      scales:{
+        x:{type:"linear",ticks:{maxTicksLimit:7,font:{size:11},color:"#736654",callback:v=>new Date(v).toLocaleDateString("en",{month:"short",year:"2-digit"})},grid:{color:"rgba(0,0,0,0.05)"}},
+        y:{display:prShow.classical,position:"left",ticks:{font:{size:11},color:"#736654"},grid:{color:"rgba(0,0,0,0.05)"}},
+        y2:{display:prShow.puzzle,position:"right",ticks:{font:{size:11},color:"rgba(42,122,74,0.85)"},grid:{display:false}}
+      }}});
+}
+
+async function loadPuzzleThemes(){
+  const dot=document.getElementById("pz-dot"), msg=document.getElementById("pz-msg"), loaded=document.getElementById("pz-loaded");
+  dot.className="dot busy";
+  try{
+    const data = await (await liFetch("https://lichess.org/api/puzzle/dashboard/90")).json();
+    const g=data.global||{};
+    const nb=dGetNb(g), wins=dGetWins(g), pct=nb>0?Math.round(wins/nb*100):0;
+    document.getElementById("pz-sum").innerHTML =
+      `<span><b>${nb.toLocaleString("en")}</b> puzzles (90d)</span>`+
+      `<span><b>${dGetPerf(g)!=null?dGetPerf(g):"—"}</b> rating</span>`+
+      `<span><b>${pct}%</b> win rate <span style="color:var(--hint)">(${wins} of ${nb})</span></span>`;
+    const themes=Object.entries(data.themes||{})
+      .filter(([,v])=>dGetNb(v)>=5)
+      .map(([k,v])=>({key:k,label:THEME_LABELS[k]||k,nb:dGetNb(v),wins:dGetWins(v),
+                      pct:dGetNb(v)>0?Math.round(dGetWins(v)/dGetNb(v)*100):0}))
+      .sort((a,b)=>a.pct-b.pct);
+    buildPuzzleChart(themes);
+    msg.classList.add("hide"); loaded.classList.remove("hide"); dot.className="dot ok";
+  }catch(e){
+    dot.className="dot err"; loaded.classList.add("hide"); msg.classList.remove("hide");
+    msg.textContent = (e.message&&e.message.indexOf("401")>=0)
+      ? "Your token needs the puzzle:read scope to load puzzle themes."
+      : navigator.onLine ? ("Couldn't load puzzle themes ("+e.message+").")
+                         : "Offline — connect to load puzzle themes.";
+  }
+}
+
+function buildPuzzleChart(themes){
+  if(!window.Chart) return;
+  document.getElementById("pz-chart-box").style.height = Math.max(140, themes.length*26+40)+"px";
+  if(pzChart) pzChart.destroy();
+  const colors=themes.map(t=> t.pct>=60?"#2a7a4a" : t.pct>=45?"#d46820" : "#c0321a");
+  pzChart=new Chart(document.getElementById("pz-chart"),{type:"bar",
+    data:{labels:themes.map(t=>t.label),datasets:[{data:themes.map(t=>t.pct),backgroundColor:colors,borderWidth:0,borderRadius:4}]},
+    options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},
+        tooltip:{backgroundColor:"#2a2318",titleColor:"#faf8f4",bodyColor:"#faf8f4",padding:8,displayColors:false,
+          callbacks:{label:c=>{const t=themes[c.dataIndex]; return `${t.pct}% · ${t.wins} of ${t.nb}`;}}}},
+      scales:{
+        x:{min:0,max:100,ticks:{font:{size:10},color:"#736654",callback:v=>v+"%"},grid:{color:"rgba(0,0,0,0.05)"}},
+        y:{ticks:{font:{size:11},color:"#5a4f40",autoSkip:false},grid:{display:false}}
+      }}});
+}
+
+document.querySelectorAll("#pr-chips .chip").forEach(ch=>{
+  ch.addEventListener("click",()=>{ const s=ch.dataset.series; prShow[s]=!prShow[s];
+    ch.classList.toggle("off",!prShow[s]); buildRatingChart(); });
+});
+
 /* ============================ Start ============================ */
-(function(){ const saved = localStorage.getItem(TOKEN_KEY); if(saved) verifyToken(saved); })();
+(function(){ const saved = localStorage.getItem(TOKEN_KEY); if(saved) verifyToken(saved).then(ok=>{ if(ok) loadDashboardTiles(); }); })();
 initEngine();
 renderStats();
 </script>
