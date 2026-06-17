@@ -87,7 +87,7 @@
   .op-wdl{display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; margin:0.5rem 0 0.3rem;}
   .op-wdl .n{font-size:1.1rem; font-weight:700; line-height:1.1;}
   .op-wdl .k{font-size:0.68rem; color:var(--muted);}
-  .elo-mini{float:right; display:flex; gap:0.5rem; font-weight:400;}
+  .elo-mini{margin-left:auto; display:flex; gap:0.5rem; font-weight:400;}
   .elo-mini .em{text-align:center; line-height:1.1; border:1px solid var(--border); border-radius:12px; padding:0.3rem 0.7rem; background:var(--tile2);}
   .elo-mini .emn{font-family:var(--display); font-size:1.05rem; font-weight:600; color:var(--board-dark); display:block;}
   .elo-mini .eml{font-size:0.58rem; text-transform:uppercase; letter-spacing:.03em; color:var(--hint);}
@@ -229,7 +229,7 @@
         <span class="chip off" data-m="cp"><span class="sw" style="background:#c0321a"></span>CP loss</span>
         <span class="chip off" data-m="blunder"><span class="sw" style="background:#7a3a8a"></span>Blunder score</span>
       </div>
-      <div class="chart-box" style="height:200px"><canvas id="rg-chart" role="img" aria-label="Per-game metrics">Per-game rating, accuracy and error metrics.</canvas></div>
+      <div class="chart-box" style="height:400px"><canvas id="rg-chart" role="img" aria-label="Per-game metrics">Per-game rating, accuracy and error metrics.</canvas></div>
       <div class="rg-wrap">
         <table class="rg" id="rg-table"><thead><tr>
           <th data-c="date">Date</th><th data-c="color">Col</th><th data-c="opp">Opponent</th>
