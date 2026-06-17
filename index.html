@@ -75,7 +75,8 @@
   .coin.white{background:#f2efe9;} .coin.black{background:#3a342c;}
   .res-w{color:var(--green); font-weight:600;} .res-l{color:var(--red);} .res-d{color:var(--muted);}
   .tp-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:0.7rem; margin-top:0.4rem;}
-  .tp-tile{background:var(--tile2); border:1px solid var(--border); border-radius:14px; padding:0.7rem 0.8rem;}
+  .tp-tile{background:var(--tile2); border:1px solid var(--border); border-radius:14px; padding:0.7rem 0.8rem; text-decoration:none; color:inherit; display:block; cursor:pointer;}
+  .tp-tile:hover{border-color:var(--accent);}
   .tp-tile .lbl{font-family:var(--display); font-size:1rem; font-weight:600; color:var(--board-dark);}
   .tp-tile .src{font-size:0.68rem; text-transform:uppercase; letter-spacing:.03em; color:var(--hint); margin:0.15rem 0;}
   .tp-tile .det{font-size:0.82rem; color:var(--muted);}
@@ -86,10 +87,10 @@
   .op-wdl{display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; margin:0.5rem 0 0.3rem;}
   .op-wdl .n{font-size:1.1rem; font-weight:700; line-height:1.1;}
   .op-wdl .k{font-size:0.68rem; color:var(--muted);}
-  .elo-mini{float:right; display:flex; gap:0.9rem; font-weight:400;}
-  .elo-mini .em{text-align:right; line-height:1.05;}
+  .elo-mini{float:right; display:flex; gap:0.5rem; font-weight:400;}
+  .elo-mini .em{text-align:center; line-height:1.1; border:1px solid var(--border); border-radius:12px; padding:0.3rem 0.7rem; background:var(--tile2);}
   .elo-mini .emn{font-family:var(--display); font-size:1.05rem; font-weight:600; color:var(--board-dark); display:block;}
-  .elo-mini .eml{font-size:0.6rem; text-transform:uppercase; letter-spacing:.03em; color:var(--hint);}
+  .elo-mini .eml{font-size:0.58rem; text-transform:uppercase; letter-spacing:.03em; color:var(--hint);}
   hr.setup-div{border:none; border-top:1px solid var(--border); margin:1.2rem 0;}
 
   .card{background:var(--tile); border:1px solid var(--border);
@@ -223,7 +224,7 @@
     <p class="tile-msg" id="rg-msg">Connect your Lichess token to load your games.</p>
     <div id="rg-loaded" class="hide">
       <div class="chips" id="rg-chips">
-        <span class="chip" data-m="rating"><span class="sw" style="background:#6b5d4a"></span>Rating</span>
+        <span class="chip off" data-m="rating"><span class="sw" style="background:#6b5d4a"></span>Rating</span>
         <span class="chip" data-m="accuracy"><span class="sw" style="background:#2a5f8f"></span>Accuracy</span>
         <span class="chip off" data-m="cp"><span class="sw" style="background:#c0321a"></span>CP loss</span>
         <span class="chip off" data-m="blunder"><span class="sw" style="background:#7a3a8a"></span>Blunder score</span>
@@ -1192,7 +1193,7 @@ function buildPuzzleChart(themes){
   pzChart=new Chart(document.getElementById("pz-chart"),{type:"bar",
     data:{labels:themes.map(t=>t.label),datasets:[{data:themes.map(t=>t.pct),backgroundColor:colors,borderWidth:0,borderRadius:4}]},
     options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,
-      onClick:(e,els)=>{ if(els&&els.length){ const t=themes[els[0].index]; if(t&&t.key) window.open("https://lichess.org/training/"+t.key,"_blank"); } },
+      onClick:(e,els)=>{ if(els&&els.length){ const t=themes[els[0].index]; if(t&&t.key) window.extOpen("https://lichess.org/training/"+t.key); } },
       onHover:(e,els)=>{ if(e.native&&e.native.target) e.native.target.style.cursor=(els&&els.length)?"pointer":"default"; },
       plugins:{legend:{display:false},
         tooltip:{backgroundColor:"#2a2318",titleColor:"#faf8f4",bodyColor:"#faf8f4",padding:8,displayColors:false,
@@ -1218,8 +1219,14 @@ const REPERTOIRE = [
   {name:'Caro-Kann', color:'black', families:['Caro-Kann']}
 ];
 let prGames=[], pzThemes=[], rgChart=null, rgSort={c:"date",dir:"desc"};
-const rgShow={ rating:true, accuracy:true, cp:false, blunder:false };
+const rgShow={ rating:false, accuracy:true, cp:false, blunder:false };
 const RG_MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+window.extOpen = function(url){
+  const a=document.createElement("a");
+  a.href=url; a.target="_blank"; a.rel="noopener"; a.style.display="none";
+  document.body.appendChild(a); a.click(); a.remove();
+};
 
 function meSide(g){
   const u=(localStorage.getItem(USER_KEY)||"").toLowerCase();
@@ -1273,7 +1280,7 @@ function rgRow(g){
   const cell=(v,col)=> (an&&v>0)?`<span style="color:${col};font-weight:600">${v}</span>`:`<span style="color:var(--hint)">—</span>`;
   const accNum=(an&&an.accuracy!=null)?an.accuracy:null;
   const acc=accNum!=null?Math.round(accNum)+"%":`<span style="color:var(--hint)">—</span>`;
-  const html=`<tr onclick="window.open('https://lichess.org/${g.id}','_blank')" title="Open on Lichess">`+
+  const html=`<tr onclick="extOpen('https://lichess.org/${g.id}')" title="Open on Lichess">`+
     `<td style="color:var(--muted)">${date}</td>`+
     `<td><span class="coin ${isWhite?'white':'black'}"></span></td>`+
     `<td>${oppName}</td>`+
@@ -1392,7 +1399,7 @@ async function renderPriorities(){
     if(c.mistake)p.push(c.mistake+" mistake"+(c.mistake>1?"s":""));
     if(c.inaccuracy)p.push(c.inaccuracy+" inacc.");
     if(r.pct!=null)p.push(r.pct+"% ("+r.nb+")");
-    return `<div class="tp-tile"><div class="lbl">${r.label}</div><div class="src">${src}</div><div class="det">${p.join(" · ")}</div></div>`;
+    return `<a class="tp-tile" href="https://lichess.org/training/${r.k}" target="_blank" rel="noopener"><div class="lbl">${r.label}</div><div class="src">${src}</div><div class="det">${p.join(" · ")}</div></a>`;
   }).join("");
 }
 
