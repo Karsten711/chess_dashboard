@@ -86,6 +86,11 @@
   .op-wdl{display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; margin:0.5rem 0 0.3rem;}
   .op-wdl .n{font-size:1.1rem; font-weight:700; line-height:1.1;}
   .op-wdl .k{font-size:0.68rem; color:var(--muted);}
+  .elo-mini{float:right; display:flex; gap:0.9rem; font-weight:400;}
+  .elo-mini .em{text-align:right; line-height:1.05;}
+  .elo-mini .emn{font-family:var(--display); font-size:1.05rem; font-weight:600; color:var(--board-dark); display:block;}
+  .elo-mini .eml{font-size:0.6rem; text-transform:uppercase; letter-spacing:.03em; color:var(--hint);}
+  hr.setup-div{border:none; border-top:1px solid var(--border); margin:1.2rem 0;}
 
   .card{background:var(--tile); border:1px solid var(--border);
     border-radius:var(--radius); padding:1.15rem 1.2rem;
@@ -209,50 +214,12 @@
     </div>
   </header>
 
-  <!-- LICHESS -->
-  <section class="card">
-    <h2><span class="dot" id="li-dot"></span> Lichess</h2>
-    <p class="lead">Paste a personal access token so the app can fetch your games.</p>
-    <div class="row">
-      <input type="password" id="li-token" placeholder="lip_…" autocomplete="off" spellcheck="false">
-      <button id="li-save">Save</button>
-    </div>
-    <p class="status" id="li-status" style="margin-top:0.7rem">Not connected.</p>
-    <p class="hint">Token via <a href="https://lichess.org/account/oauth/token" target="_blank" rel="noopener">lichess.org → API access tokens</a>. Stored on this device only.</p>
-  </section>
-
-  <!-- PROFILE & RATINGS -->
-  <section class="card" id="sec-pr">
-    <h2><span class="dot" id="pr-dot"></span> Profile &amp; Ratings</h2>
-    <p class="tile-msg" id="pr-msg">Connect your Lichess token to load your profile.</p>
-    <div id="pr-loaded" class="hide">
-      <div class="pr-head">
-        <span class="pr-name" id="pr-name">—</span>
-        <span class="pr-title hide" id="pr-title"></span>
-        <span class="pr-since" id="pr-since"></span>
-      </div>
-      <div class="pr-stats" id="pr-stats"></div>
-      <div class="chips" id="pr-chips">
-        <span class="chip" data-series="classical"><span class="sw" style="background:#6b5d4a"></span>Classical</span>
-        <span class="chip" data-series="puzzle"><span class="sw" style="background:#2a7a4a"></span>Puzzle</span>
-      </div>
-      <div class="chart-box" style="height:240px"><canvas id="pr-chart" role="img" aria-label="Rating history">Your Classical and Puzzle rating over time.</canvas></div>
-    </div>
-  </section>
-
-  <!-- PUZZLE THEMES -->
-  <section class="card" id="sec-pz">
-    <h2><span class="dot" id="pz-dot"></span> Puzzle Themes</h2>
-    <p class="tile-msg" id="pz-msg">Connect your Lichess token to load your puzzle themes.</p>
-    <div id="pz-loaded" class="hide">
-      <div class="pz-sum" id="pz-sum"></div>
-      <div class="chart-box" id="pz-chart-box" style="height:300px"><canvas id="pz-chart" role="img" aria-label="Puzzle theme win rates">Win rate per puzzle theme over the last 90 days.</canvas></div>
-    </div>
-  </section>
-
   <!-- RATED GAMES -->
   <section class="card" id="sec-rg">
-    <h2><span class="dot" id="rg-dot"></span> Rated Games</h2>
+    <h2><span class="dot" id="rg-dot"></span> Rated Games<span class="elo-mini" id="rg-elo">
+      <span class="em"><span class="emn" id="elo-cl">—</span><span class="eml">Classical</span></span>
+      <span class="em"><span class="emn" id="elo-pz">—</span><span class="eml">Puzzle</span></span>
+    </span></h2>
     <p class="tile-msg" id="rg-msg">Connect your Lichess token to load your games.</p>
     <div id="rg-loaded" class="hide">
       <div class="chips" id="rg-chips">
@@ -273,32 +240,21 @@
     </div>
   </section>
 
+  <!-- PUZZLE THEMES -->
+  <section class="card" id="sec-pz">
+    <h2><span class="dot" id="pz-dot"></span> Puzzle Themes</h2>
+    <p class="tile-msg" id="pz-msg">Connect your Lichess token to load your puzzle themes.</p>
+    <div id="pz-loaded" class="hide">
+      <div class="pz-sum" id="pz-sum"></div>
+      <div class="chart-box" id="pz-chart-box" style="height:300px"><canvas id="pz-chart" role="img" aria-label="Puzzle theme win rates">Win rate per puzzle theme over the last 90 days.</canvas></div>
+    </div>
+  </section>
+
   <!-- TRAINING PRIORITIES -->
   <section class="card" id="sec-tp">
     <h2><span class="dot" id="tp-dot"></span> Training Priorities</h2>
     <p class="tile-msg" id="tp-msg">Build your queue and load puzzle themes to see priorities.</p>
     <div class="tp-grid" id="tp-grid"></div>
-  </section>
-
-  <!-- OPENING REPERTOIRE -->
-  <section class="card" id="sec-op">
-    <h2><span class="dot" id="op-dot"></span> Opening Repertoire</h2>
-    <p class="tile-msg" id="op-msg">Connect your Lichess token to load your repertoire performance.</p>
-    <div class="op-grid" id="op-grid"></div>
-  </section>
-
-  <!-- BUILD -->
-  <section class="card">
-    <h2><span class="dot busy" id="eng-dot"></span> Build queue</h2>
-    <p class="lead">Fetches your latest rated Classical games, analyses each of your moves at depth 16, and adds the mistakes to your review queue.</p>
-    <div class="row">
-      <span class="status">Games:</span>
-      <input type="number" id="bld-n" min="1" max="10" value="7">
-      <button id="bld-go" disabled>Build queue</button>
-    </div>
-    <div class="progress hide" id="bld-prog"></div>
-    <div class="bar hide" id="bld-bar"><i></i></div>
-    <p class="hint" id="eng-hint">Loading engine…</p>
   </section>
 
   <!-- QUEUE / REVIEW -->
@@ -350,8 +306,37 @@
     </div>
   </section>
 
-  <!-- OFFLINE -->
-  <section class="card">
+  <!-- OPENING REPERTOIRE -->
+  <section class="card" id="sec-op">
+    <h2><span class="dot" id="op-dot"></span> Opening Repertoire</h2>
+    <p class="tile-msg" id="op-msg">Connect your Lichess token to load your repertoire performance.</p>
+    <div class="op-grid" id="op-grid"></div>
+  </section>
+
+  <!-- SETUP -->
+  <section class="card" id="sec-setup">
+    <h2><span class="dot" id="li-dot"></span> Lichess</h2>
+    <p class="lead">Paste a personal access token so the app can fetch your games.</p>
+    <div class="row">
+      <input type="password" id="li-token" placeholder="lip_…" autocomplete="off" spellcheck="false">
+      <button id="li-save">Save</button>
+    </div>
+    <p class="status" id="li-status" style="margin-top:0.7rem">Not connected.</p>
+    <p class="hint">Token via <a href="https://lichess.org/account/oauth/token" target="_blank" rel="noopener">lichess.org → API access tokens</a>. Stored on this device only.</p>
+  
+    <hr class="setup-div">
+    <h2><span class="dot busy" id="eng-dot"></span> Build queue</h2>
+    <p class="lead">Fetches your latest rated Classical games, analyses each of your moves at depth 16, and adds the mistakes to your review queue.</p>
+    <div class="row">
+      <span class="status">Games:</span>
+      <input type="number" id="bld-n" min="1" max="10" value="7">
+      <button id="bld-go" disabled>Build queue</button>
+    </div>
+    <div class="progress hide" id="bld-prog"></div>
+    <div class="bar hide" id="bld-bar"><i></i></div>
+    <p class="hint" id="eng-hint">Loading engine…</p>
+  
+    <hr class="setup-div">
     <h2><span class="dot busy" id="sw-dot"></span> Offline &amp; install</h2>
     <p class="status" id="sw-status">Setting up offline mode…</p>
     <p class="lead" style="margin-top:0.8rem;margin-bottom:0.2rem">Add to your iPad home screen:</p>
@@ -360,6 +345,7 @@
       <li>Tap <b>Share</b>.</li>
       <li>Choose <b>Add to Home Screen</b>.</li>
     </ol>
+  
   </section>
 
   <footer>Block 2 — Blunder Review Queue · v0.5</footer>
@@ -1113,7 +1099,7 @@ async function liFetch(url){
 function loadDashboardTiles(){
   const user = localStorage.getItem(USER_KEY)||"";
   if(!user) return;
-  loadProfileRatings(user);
+  loadRatings(user);
   loadPuzzleThemes();
   loadGamesData(user);
 }
@@ -1206,6 +1192,8 @@ function buildPuzzleChart(themes){
   pzChart=new Chart(document.getElementById("pz-chart"),{type:"bar",
     data:{labels:themes.map(t=>t.label),datasets:[{data:themes.map(t=>t.pct),backgroundColor:colors,borderWidth:0,borderRadius:4}]},
     options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,
+      onClick:(e,els)=>{ if(els&&els.length){ const t=themes[els[0].index]; if(t&&t.key) window.open("https://lichess.org/training/"+t.key,"_blank"); } },
+      onHover:(e,els)=>{ if(e.native&&e.native.target) e.native.target.style.cursor=(els&&els.length)?"pointer":"default"; },
       plugins:{legend:{display:false},
         tooltip:{backgroundColor:"#2a2318",titleColor:"#faf8f4",bodyColor:"#faf8f4",padding:8,displayColors:false,
           callbacks:{label:c=>{const t=themes[c.dataIndex]; return `${t.pct}% · ${t.wins} of ${t.nb}`;}}}},
@@ -1238,6 +1226,17 @@ function meSide(g){
   const pw=g.players&&g.players.white, pb=g.players&&g.players.black;
   const isWhite = !!(pw&&pw.user&&pw.user.name&&pw.user.name.toLowerCase()===u);
   return { isWhite, me:isWhite?pw:pb, opp:isWhite?pb:pw };
+}
+
+async function loadRatings(user){
+  try{
+    const u=await (await liFetch(`https://lichess.org/api/user/${encodeURIComponent(user)}`)).json();
+    const cl=u.perfs&&u.perfs.classical&&u.perfs.classical.rating;
+    const pz=u.perfs&&u.perfs.puzzle&&u.perfs.puzzle.rating;
+    const ce=document.getElementById("elo-cl"), pe=document.getElementById("elo-pz");
+    if(ce) ce.textContent=cl!=null?cl:"—";
+    if(pe) pe.textContent=pz!=null?pz:"—";
+  }catch(e){}
 }
 
 async function loadGamesData(user){
