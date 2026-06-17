@@ -65,6 +65,27 @@
   .pz-sum{display:flex; flex-wrap:wrap; gap:0.3rem 1.2rem; font-size:0.88rem; color:var(--muted); margin:0.1rem 0 0.5rem;}
   .pz-sum b{color:var(--text);}
   .tile-msg{font-size:0.88rem; color:var(--muted); padding:0.3rem 0;}
+  /* ---- Rated Games / Priorities / Openings (pass 2) ---- */
+  .rg-wrap{max-height:380px; overflow:auto; margin-top:0.3rem; border:1px solid var(--border); border-radius:12px;}
+  table.rg{width:100%; border-collapse:collapse; font-size:0.82rem;}
+  table.rg th{position:sticky; top:0; background:var(--tile2); color:var(--muted); font-weight:600; text-align:left; padding:0.5rem 0.55rem; font-size:0.68rem; text-transform:uppercase; letter-spacing:.02em; cursor:pointer; user-select:none; white-space:nowrap;}
+  table.rg td{padding:0.42rem 0.55rem; border-top:1px solid var(--border); color:var(--text); white-space:nowrap; cursor:pointer;}
+  table.rg tbody tr:hover td{background:rgba(0,0,0,0.03);}
+  .coin{display:inline-block; width:14px; height:14px; border-radius:50%; border:1px solid var(--border); vertical-align:-2px;}
+  .coin.white{background:#f2efe9;} .coin.black{background:#3a342c;}
+  .res-w{color:var(--green); font-weight:600;} .res-l{color:var(--red);} .res-d{color:var(--muted);}
+  .tp-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:0.7rem; margin-top:0.4rem;}
+  .tp-tile{background:var(--tile2); border:1px solid var(--border); border-radius:14px; padding:0.7rem 0.8rem;}
+  .tp-tile .lbl{font-family:var(--display); font-size:1rem; font-weight:600; color:var(--board-dark);}
+  .tp-tile .src{font-size:0.68rem; text-transform:uppercase; letter-spacing:.03em; color:var(--hint); margin:0.15rem 0;}
+  .tp-tile .det{font-size:0.82rem; color:var(--muted);}
+  .op-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:0.7rem; margin-top:0.4rem;}
+  .op-card{background:var(--tile2); border:1px solid var(--border); border-radius:14px; padding:0.8rem; text-align:center;}
+  .op-card .nm{font-family:var(--display); font-size:1rem; font-weight:600; color:var(--board-dark);}
+  .op-card .cl{font-size:0.68rem; text-transform:uppercase; letter-spacing:.03em; color:var(--hint);}
+  .op-wdl{display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; margin:0.5rem 0 0.3rem;}
+  .op-wdl .n{font-size:1.1rem; font-weight:700; line-height:1.1;}
+  .op-wdl .k{font-size:0.68rem; color:var(--muted);}
 
   .card{background:var(--tile); border:1px solid var(--border);
     border-radius:var(--radius); padding:1.15rem 1.2rem;
@@ -227,6 +248,43 @@
       <div class="pz-sum" id="pz-sum"></div>
       <div class="chart-box" id="pz-chart-box" style="height:300px"><canvas id="pz-chart" role="img" aria-label="Puzzle theme win rates">Win rate per puzzle theme over the last 90 days.</canvas></div>
     </div>
+  </section>
+
+  <!-- RATED GAMES -->
+  <section class="card" id="sec-rg">
+    <h2><span class="dot" id="rg-dot"></span> Rated Games</h2>
+    <p class="tile-msg" id="rg-msg">Connect your Lichess token to load your games.</p>
+    <div id="rg-loaded" class="hide">
+      <div class="chips" id="rg-chips">
+        <span class="chip" data-m="rating"><span class="sw" style="background:#6b5d4a"></span>Rating</span>
+        <span class="chip" data-m="accuracy"><span class="sw" style="background:#2a5f8f"></span>Accuracy</span>
+        <span class="chip off" data-m="cp"><span class="sw" style="background:#c0321a"></span>CP loss</span>
+        <span class="chip off" data-m="blunder"><span class="sw" style="background:#7a3a8a"></span>Blunder score</span>
+      </div>
+      <div class="chart-box" style="height:200px"><canvas id="rg-chart" role="img" aria-label="Per-game metrics">Per-game rating, accuracy and error metrics.</canvas></div>
+      <div class="rg-wrap">
+        <table class="rg" id="rg-table"><thead><tr>
+          <th data-c="date">Date</th><th data-c="color">Col</th><th data-c="opp">Opponent</th>
+          <th data-c="opprating">Rtg</th><th data-c="result">Result</th><th data-c="opening">Opening</th>
+          <th data-c="moves">Moves</th><th data-c="blunder">Bl</th><th data-c="mistake">Mi</th>
+          <th data-c="inacc">In</th><th data-c="accuracy">Acc</th>
+        </tr></thead><tbody id="rg-tbody"></tbody></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRAINING PRIORITIES -->
+  <section class="card" id="sec-tp">
+    <h2><span class="dot" id="tp-dot"></span> Training Priorities</h2>
+    <p class="tile-msg" id="tp-msg">Build your queue and load puzzle themes to see priorities.</p>
+    <div class="tp-grid" id="tp-grid"></div>
+  </section>
+
+  <!-- OPENING REPERTOIRE -->
+  <section class="card" id="sec-op">
+    <h2><span class="dot" id="op-dot"></span> Opening Repertoire</h2>
+    <p class="tile-msg" id="op-msg">Connect your Lichess token to load your repertoire performance.</p>
+    <div class="op-grid" id="op-grid"></div>
   </section>
 
   <!-- BUILD -->
@@ -1057,6 +1115,7 @@ function loadDashboardTiles(){
   if(!user) return;
   loadProfileRatings(user);
   loadPuzzleThemes();
+  loadGamesData(user);
 }
 
 function dStat(n,l){ return `<div class="pr-stat"><div class="n">${n}</div><div class="l">${l}</div></div>`; }
@@ -1128,6 +1187,7 @@ async function loadPuzzleThemes(){
                       pct:dGetNb(v)>0?Math.round(dGetWins(v)/dGetNb(v)*100):0}))
       .sort((a,b)=>a.pct-b.pct);
     buildPuzzleChart(themes);
+    pzThemes=themes; renderPriorities();
     msg.classList.add("hide"); loaded.classList.remove("hide"); dot.className="dot ok";
   }catch(e){
     dot.className="dot err"; loaded.classList.add("hide"); msg.classList.remove("hide");
@@ -1158,6 +1218,192 @@ function buildPuzzleChart(themes){
 document.querySelectorAll("#pr-chips .chip").forEach(ch=>{
   ch.addEventListener("click",()=>{ const s=ch.dataset.series; prShow[s]=!prShow[s];
     ch.classList.toggle("off",!prShow[s]); buildRatingChart(); });
+});
+
+/* ============================ Data dashboard (pass 2) ============================ */
+const REPERTOIRE = [
+  {name:'London System', color:'white', families:['London System','London Attack']},
+  {name:'Catalan', color:'white', families:['Catalan']},
+  {name:"King's Indian Attack", color:'white', families:["King's Indian Attack"]},
+  {name:'Slav Defense', color:'black', families:['Slav Defense','Slav']},
+  {name:"King's Indian Defense", color:'black', families:["King's Indian Defense","King's Indian"]},
+  {name:'Caro-Kann', color:'black', families:['Caro-Kann']}
+];
+let prGames=[], pzThemes=[], rgChart=null, rgSort={c:"date",dir:"desc"};
+const rgShow={ rating:true, accuracy:true, cp:false, blunder:false };
+const RG_MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function meSide(g){
+  const u=(localStorage.getItem(USER_KEY)||"").toLowerCase();
+  const pw=g.players&&g.players.white, pb=g.players&&g.players.black;
+  const isWhite = !!(pw&&pw.user&&pw.user.name&&pw.user.name.toLowerCase()===u);
+  return { isWhite, me:isWhite?pw:pb, opp:isWhite?pb:pw };
+}
+
+async function loadGamesData(user){
+  const dot=document.getElementById("rg-dot"), msg=document.getElementById("rg-msg"), loaded=document.getElementById("rg-loaded");
+  dot.className="dot busy";
+  try{
+    const url=`https://lichess.org/api/games/user/${encodeURIComponent(user)}?rated=true&perfType=classical&max=30&evals=true&opening=true&accuracy=true`;
+    const token=localStorage.getItem(TOKEN_KEY)||"";
+    const headers={Accept:"application/x-ndjson"}; if(token) headers.Authorization="Bearer "+token;
+    const res=await fetch(url,{headers});
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    const text=await res.text();
+    prGames=text.trim().split("\n").filter(Boolean).map(l=>JSON.parse(l));
+    renderRatedGames(); buildGamesChart(); renderOpeningExplorer();
+    msg.classList.add("hide"); loaded.classList.remove("hide"); dot.className="dot ok";
+  }catch(e){
+    dot.className="dot err"; loaded.classList.add("hide"); msg.classList.remove("hide");
+    msg.textContent = navigator.onLine ? ("Couldn't load games ("+e.message+").") : "Offline — connect to load your games.";
+  }
+}
+
+function rgRow(g){
+  const {isWhite,me,opp}=meSide(g);
+  let result="?",rc="res-d";
+  if(g.winner){ if((g.winner==="white")===isWhite){result="Won";rc="res-w";} else {result="Lost";rc="res-l";} }
+  else if(g.status==="draw"||g.status==="stalemate"){ result="Draw"; }
+  else result=g.status||"?";
+  const d=new Date(g.createdAt), date=`${d.getDate()} ${RG_MONTHS[d.getMonth()]} '${String(d.getFullYear()).slice(2)}`;
+  const moves=g.moves?g.moves.split(" ").length:0;
+  const opening=(g.opening&&g.opening.name)?g.opening.name.split(":")[0].trim():"—";
+  const an=me?me.analysis:null;
+  const oppName=opp&&opp.user?opp.user.name:"?";
+  const oppRating=opp&&opp.rating!=null?opp.rating:"?";
+  const cell=(v,col)=> (an&&v>0)?`<span style="color:${col};font-weight:600">${v}</span>`:`<span style="color:var(--hint)">—</span>`;
+  const accNum=(an&&an.accuracy!=null)?an.accuracy:null;
+  const acc=accNum!=null?Math.round(accNum)+"%":`<span style="color:var(--hint)">—</span>`;
+  const html=`<tr onclick="window.open('https://lichess.org/${g.id}','_blank')" title="Open on Lichess">`+
+    `<td style="color:var(--muted)">${date}</td>`+
+    `<td><span class="coin ${isWhite?'white':'black'}"></span></td>`+
+    `<td>${oppName}</td>`+
+    `<td style="color:var(--muted)">${oppRating}</td>`+
+    `<td class="${rc}">${result}</td>`+
+    `<td style="color:var(--muted);max-width:150px;overflow:hidden;text-overflow:ellipsis" title="${opening}">${opening}</td>`+
+    `<td style="color:var(--hint)">${moves}</td>`+
+    `<td style="text-align:center">${cell(an?an.blunder:0,'var(--red)')}</td>`+
+    `<td style="text-align:center">${cell(an?an.mistake:0,'var(--orange)')}</td>`+
+    `<td style="text-align:center">${cell(an?an.inaccuracy:0,'var(--muted)')}</td>`+
+    `<td style="text-align:center;color:var(--hint)">${acc}</td></tr>`;
+  return {dateMs:g.createdAt, result, oppRating:+oppRating||0, moves, bl:an?an.blunder||0:-1, accNum, html};
+}
+
+function renderRatedGames(){
+  const rows=prGames.map(rgRow);
+  const dir=rgSort.dir==="asc"?1:-1;
+  rows.sort((a,b)=>{
+    let va,vb;
+    switch(rgSort.c){
+      case "accuracy": va=a.accNum==null?-1:a.accNum; vb=b.accNum==null?-1:b.accNum; break;
+      case "blunder": va=a.bl; vb=b.bl; break;
+      case "result": va=a.result; vb=b.result; break;
+      case "opprating": va=a.oppRating; vb=b.oppRating; break;
+      case "moves": va=a.moves; vb=b.moves; break;
+      default: va=a.dateMs; vb=b.dateMs;
+    }
+    return va<vb?-dir:va>vb?dir:0;
+  });
+  document.getElementById("rg-tbody").innerHTML=rows.map(r=>r.html).join("");
+}
+
+function buildGamesChart(){
+  if(!window.Chart) return;
+  if(rgChart) rgChart.destroy();
+  const gs=prGames.slice().reverse();
+  const lab=gs.map((_,i)=>i+1);
+  const rating=gs.map(g=>{const {me}=meSide(g); return me&&me.rating!=null?me.rating+(me.ratingDiff||0):null;});
+  const accu  =gs.map(g=>{const {me}=meSide(g); return me&&me.analysis&&me.analysis.accuracy!=null?Math.round(me.analysis.accuracy):null;});
+  const cp    =gs.map(g=>{const {me}=meSide(g); return me&&me.analysis&&me.analysis.acpl!=null?me.analysis.acpl:null;});
+  const bls   =gs.map(g=>{const {me}=meSide(g); const a=me&&me.analysis; return a?3*(a.blunder||0)+2*(a.mistake||0)+(a.inaccuracy||0):null;});
+  const ds=[];
+  if(rgShow.rating)   ds.push({label:"Rating",data:rating,borderColor:"#6b5d4a",borderWidth:2.5,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y"});
+  if(rgShow.accuracy) ds.push({label:"Accuracy",data:accu,borderColor:"#2a5f8f",borderWidth:1.8,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y2"});
+  if(rgShow.cp)       ds.push({label:"CP loss",data:cp,borderColor:"#c0321a",borderWidth:1.8,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y3"});
+  if(rgShow.blunder)  ds.push({label:"Blunder score",data:bls,borderColor:"#7a3a8a",borderWidth:1.8,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y3"});
+  rgChart=new Chart(document.getElementById("rg-chart"),{type:"line",data:{labels:lab,datasets:ds},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:"#2a2318",titleColor:"#faf8f4",bodyColor:"#faf8f4",padding:8}},
+      scales:{
+        x:{ticks:{font:{size:10},color:"#736654"},grid:{display:false}},
+        y:{display:rgShow.rating,position:"left",ticks:{font:{size:10},color:"#736654"},grid:{color:"rgba(0,0,0,0.05)"}},
+        y2:{display:rgShow.accuracy,position:"right",min:0,max:100,ticks:{font:{size:10},color:"rgba(42,95,143,0.85)",callback:v=>v+"%"},grid:{display:false}},
+        y3:{display:rgShow.cp||rgShow.blunder,position:"right",reverse:true,ticks:{font:{size:10},color:"#736654"},grid:{display:false}}
+      }}});
+}
+
+function matchRep(name){
+  if(!name) return null; const n=name.toLowerCase();
+  for(const r of REPERTOIRE){ if(r.families.some(f=>n.includes(f.toLowerCase()))) return r; }
+  return null;
+}
+
+function renderOpeningExplorer(){
+  const stats={}; REPERTOIRE.forEach(r=>stats[r.name]={w:0,d:0,l:0,nb:0,bl:0,accSum:0,accNb:0});
+  prGames.forEach(g=>{ const r=matchRep(g.opening&&g.opening.name); if(!r) return;
+    const s=stats[r.name]; s.nb++; const {isWhite,me}=meSide(g);
+    if(!g.winner) s.d++; else if((g.winner==="white")===isWhite) s.w++; else s.l++;
+    if(me&&me.analysis){ s.bl+=me.analysis.blunder||0; if(me.analysis.accuracy!=null){s.accSum+=me.analysis.accuracy;s.accNb++;} }
+  });
+  document.getElementById("op-msg").classList.add("hide");
+  document.getElementById("op-grid").innerHTML=REPERTOIRE.map(r=>{
+    const s=stats[r.name];
+    const blpg=s.nb>0?Math.round(s.bl/s.nb*10)/10:0;
+    const dens=blpg>=2?"var(--red)":blpg>=1?"var(--orange)":"var(--green)";
+    const acc=s.accNb>0?Math.round(s.accSum/s.accNb)+"%":"—";
+    const body=s.nb>0
+      ? `<div class="op-wdl"><div><div class="n" style="color:var(--green)">${s.w}</div><div class="k">won</div></div>`+
+        `<div><div class="n" style="color:var(--muted)">${s.d}</div><div class="k">draw</div></div>`+
+        `<div><div class="n" style="color:var(--red)">${s.l}</div><div class="k">lost</div></div></div>`+
+        `<div style="font-size:0.8rem;color:var(--muted)">${s.nb} game${s.nb!==1?"s":""} · acc ${acc}</div>`+
+        `<div style="font-size:0.78rem;color:${dens};margin-top:2px">${blpg} blunders/game</div>`
+      : `<div style="font-size:0.85rem;color:var(--hint);padding:0.6rem 0">Not played yet</div>`;
+    return `<div class="op-card"><div class="nm">${r.name}</div><div class="cl">${r.color}</div>${body}</div>`;
+  }).join("");
+}
+
+async function renderPriorities(){
+  let items=[]; try{ items=await idbAll("items"); }catch(e){ items=[]; }
+  const skip=new Set(["opening","middlegame","endgame","check","materialGain"]);
+  const byMotif={};
+  items.forEach(it=>{ const sev=(it.severity||"").toLowerCase(); const w=sev==="blunder"?3:sev==="mistake"?2:1;
+    (it.motifs||[]).forEach(m=>{ if(skip.has(m)) return;
+      const b=byMotif[m]||(byMotif[m]={blunder:0,mistake:0,inaccuracy:0,sev:0});
+      if(sev==="blunder")b.blunder++; else if(sev==="mistake")b.mistake++; else b.inaccuracy++;
+      b.sev+=w; });
+  });
+  const pzMap={}; pzThemes.forEach(t=>pzMap[t.key]=t);
+  const keys=new Set([...Object.keys(byMotif), ...pzThemes.map(t=>t.key)]);
+  const rows=[...keys].map(k=>{
+    const gm=byMotif[k]||{blunder:0,mistake:0,inaccuracy:0,sev:0};
+    const pz=pzMap[k];
+    const pct=pz?pz.pct:null, nb=pz?pz.nb:0;
+    const puzzleWeakness=(pct==null)?0:Math.max(0,65-pct)*Math.min(1,nb/5);
+    const combined=gm.sev>0&&puzzleWeakness>0;
+    const priority=(gm.sev*3+puzzleWeakness)*(combined?1.5:1);
+    return {k,label:THEME_LABELS[k]||k,gm,pct,nb,priority,combined,gameOnly:gm.sev>0&&pct==null};
+  }).filter(r=>r.priority>0).sort((a,b)=>b.priority-a.priority).slice(0,12);
+  const msg=document.getElementById("tp-msg"), grid=document.getElementById("tp-grid");
+  if(rows.length===0){ msg.classList.remove("hide"); grid.innerHTML=""; return; }
+  msg.classList.add("hide");
+  grid.innerHTML=rows.map(r=>{
+    const src=r.combined?"Games + Puzzles":r.gameOnly?"Games only":"Puzzle";
+    const p=[]; const c=r.gm;
+    if(c.blunder)p.push(c.blunder+" blunder"+(c.blunder>1?"s":""));
+    if(c.mistake)p.push(c.mistake+" mistake"+(c.mistake>1?"s":""));
+    if(c.inaccuracy)p.push(c.inaccuracy+" inacc.");
+    if(r.pct!=null)p.push(r.pct+"% ("+r.nb+")");
+    return `<div class="tp-tile"><div class="lbl">${r.label}</div><div class="src">${src}</div><div class="det">${p.join(" · ")}</div></div>`;
+  }).join("");
+}
+
+document.querySelectorAll("#rg-chips .chip").forEach(ch=>{
+  ch.addEventListener("click",()=>{ const m=ch.dataset.m; rgShow[m]=!rgShow[m]; ch.classList.toggle("off",!rgShow[m]); buildGamesChart(); });
+});
+document.querySelectorAll("#rg-table th").forEach(th=>{
+  th.addEventListener("click",()=>{ const c=th.dataset.c; if(!c||c==="color"||c==="opp"||c==="opening") return;
+    if(rgSort.c===c) rgSort.dir=rgSort.dir==="asc"?"desc":"asc"; else { rgSort.c=c; rgSort.dir="desc"; }
+    renderRatedGames(); });
 });
 
 /* ============================ Start ============================ */
