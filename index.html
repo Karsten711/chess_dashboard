@@ -74,12 +74,14 @@
   .coin{display:inline-block; width:14px; height:14px; border-radius:50%; border:1px solid var(--border); vertical-align:-2px;}
   .coin.white{background:#f2efe9;} .coin.black{background:#3a342c;}
   .res-w{color:var(--green); font-weight:600;} .res-l{color:var(--red);} .res-d{color:var(--muted);}
-  .tp-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:0.7rem; margin-top:0.4rem;}
-  .tp-tile{background:var(--tile2); border:1px solid var(--border); border-radius:14px; padding:0.7rem 0.8rem; text-decoration:none; color:inherit; display:block; cursor:pointer;}
-  .tp-tile:hover{border-color:var(--accent);}
-  .tp-tile .lbl{font-family:var(--display); font-size:1rem; font-weight:600; color:var(--board-dark);}
-  .tp-tile .src{font-size:0.68rem; text-transform:uppercase; letter-spacing:.03em; color:var(--hint); margin:0.15rem 0;}
-  .tp-tile .det{font-size:0.82rem; color:var(--muted);}
+  .tp-grid{display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:1fr; gap:0.7rem; margin-top:0.4rem;}
+  @media(max-width:600px){ .tp-grid{grid-template-columns:repeat(2,1fr);} }
+  .tp-tile{position:relative; border:1px solid var(--border); border-radius:14px; padding:0.9rem 0.6rem 0.7rem; text-decoration:none; color:#fff; display:flex; flex-direction:column; gap:0.15rem; height:100%; min-height:108px; box-sizing:border-box; cursor:pointer; text-align:center;}
+  .tp-tile:hover{filter:brightness(0.94);}
+  .tp-tile .rank{position:absolute; top:7px; left:7px; width:23px; height:23px; border:1px solid rgba(255,255,255,0.7); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.64rem; font-weight:600;}
+  .tp-tile .lbl{font-family:var(--display); font-size:1rem; font-weight:700; line-height:1.12;}
+  .tp-tile .src{font-size:0.6rem; text-transform:uppercase; letter-spacing:.04em; opacity:0.9;}
+  .tp-tile .det{font-size:0.78rem; opacity:0.95; margin-top:auto; padding-top:0.3rem;}
   .op-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:0.7rem; margin-top:0.4rem;}
   .op-card{background:var(--tile2); border:1px solid var(--border); border-radius:14px; padding:0.8rem; text-align:center;}
   .op-card .nm{font-family:var(--display); font-size:1rem; font-weight:600; color:var(--board-dark);}
@@ -88,7 +90,7 @@
   .op-wdl .n{font-size:1.1rem; font-weight:700; line-height:1.1;}
   .op-wdl .k{font-size:0.68rem; color:var(--muted);}
   .elo-mini{margin-left:auto; display:flex; gap:0.5rem; font-weight:400;}
-  .elo-mini .em{text-align:center; line-height:1.1; border:1px solid var(--border); border-radius:12px; padding:0.3rem 0.7rem; background:var(--tile2);}
+  .elo-mini .em{text-align:center; line-height:1.1; border:1px solid var(--border); border-radius:12px; padding:0.3rem 0.7rem; background:var(--tile2); min-width:6rem; box-sizing:border-box;}
   .elo-mini .emn{font-family:var(--display); font-size:1.05rem; font-weight:600; color:var(--board-dark); display:block;}
   .elo-mini .eml{font-size:0.58rem; text-transform:uppercase; letter-spacing:.03em; color:var(--hint);}
   hr.setup-div{border:none; border-top:1px solid var(--border); margin:1.2rem 0;}
@@ -1446,6 +1448,7 @@ function renderOpeningExplorer(){
 
 const MOTIF_TO_THEMES={fork:["fork"],pin:["pin"],skewer:["skewer"],hangingPiece:["hangingPiece","crushing"],promotion:["promotion","underPromotion"],discoveredCheck:["discoveredCheck","discoveredAttack","doubleCheck"],discoveredAttack:["discoveredAttack"],doubleCheck:["doubleCheck"],deflection:["deflection"],attraction:["attraction"],backRankMate:["backRankMate","mate"],checkmate:["mate"],check:["mate"],materialGain:["crushing","hangingPiece"]};
 function motifsToThemeKeys(motifs){ const keys=new Set(); (motifs||[]).forEach(m=>{ if(MOTIF_TO_THEMES[m]) MOTIF_TO_THEMES[m].forEach(k=>keys.add(k)); }); return [...keys]; }
+function tpColor(pct){ if(pct==null||pct<50) return "#bc4a3c"; if(pct<60) return "#d68c48"; return "#2a7a4a"; }
 async function renderPriorities(){
   let items=[]; try{ items=await idbAll("items"); }catch(e){ items=[]; }
   const byMotif={};
@@ -1469,13 +1472,13 @@ async function renderPriorities(){
   const msg=document.getElementById("tp-msg"), grid=document.getElementById("tp-grid");
   if(rows.length===0){ msg.classList.remove("hide"); grid.innerHTML=""; return; }
   msg.classList.add("hide");
-  grid.innerHTML=rows.map(r=>{
+  grid.innerHTML=rows.map((r,i)=>{
     const src=r.combined?"Games + Puzzles":r.gameOnly?"Games only":"Puzzle";
     const p=[]; const c=r.gm;
     const errs=c.blunder+c.mistake+c.inaccuracy;
     if(errs)p.push(errs+" error"+(errs>1?"s":"")+" in "+r.games+" game"+(r.games>1?"s":""));
     if(r.pct!=null)p.push(r.pct+"% ("+r.nb+")");
-    return `<a class="tp-tile" href="https://lichess.org/training/${r.k}" target="_blank" rel="noopener"><div class="lbl">${r.label}</div><div class="src">${src}</div><div class="det">${p.join(" · ")}</div></a>`;
+    return `<a class="tp-tile" style="background:${tpColor(r.pct)}" href="https://lichess.org/training/${r.k}" target="_blank" rel="noopener"><span class="rank">${i+1}</span><div class="lbl">${r.label}</div><div class="src">${src}</div><div class="det">${p.join(" · ")}</div></a>`;
   }).join("");
 }
 
