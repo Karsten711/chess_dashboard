@@ -85,13 +85,21 @@
   .tp-tile .lbl{font-family:var(--display); font-size:1rem; font-weight:700; line-height:1.12;}
   .tp-tile .src{font-size:0.6rem; text-transform:uppercase; letter-spacing:.04em; opacity:0.9;}
   .tp-tile .det{font-size:0.78rem; opacity:0.95; margin-top:auto; padding-top:0.3rem;}
-  .op-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:0.7rem; margin-top:0.4rem;}
-  .op-card{background:var(--tile2); border:1px solid var(--border); border-radius:14px; padding:0.8rem; text-align:center;}
-  .op-card .nm{font-family:var(--display); font-size:1rem; font-weight:600; color:var(--board-dark);}
-  .op-card .cl{font-size:0.68rem; text-transform:uppercase; letter-spacing:.03em; color:var(--hint);}
-  .op-wdl{display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; margin:0.5rem 0 0.3rem;}
-  .op-wdl .n{font-size:1.1rem; font-weight:700; line-height:1.1;}
-  .op-wdl .k{font-size:0.68rem; color:var(--muted);}
+  .op-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:0.7rem; margin-top:0.4rem;}
+  @media (max-width:560px){ .op-grid{grid-template-columns:repeat(2,1fr);} }
+  .op-tile{background:var(--tile); border:1px solid var(--border); border-radius:14px; overflow:hidden; display:flex; flex-direction:column; text-align:center;}
+  .op-head{padding:9px 14px; min-height:52px; display:flex; align-items:center; justify-content:center; font-family:var(--display); font-weight:700; font-size:1rem; line-height:1.15;}
+  .op-eco{font-size:0.82rem; font-weight:700; letter-spacing:0.04em;}
+  .color-pill{display:inline-flex; align-items:center; justify-content:center; padding:3px 12px; border-radius:999px; font-size:0.74rem; font-weight:600; line-height:1.3;}
+  .color-pill.white{background:var(--board-light); color:var(--text); border:1px solid var(--border);}
+  .color-pill.black{background:#3d3020; color:#f5f1e8;}
+  .op-body{padding:9px 11px; display:flex; flex-direction:column; gap:4px; flex:1;}
+  .op-wdl{display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; text-align:center;}
+  .op-wdl .n{font-size:1.2rem; font-weight:700; line-height:1.2;}
+  .op-wdl .k{font-size:0.74rem; color:var(--muted);}
+  .op-acts{display:flex; flex-direction:column; gap:8px; padding-top:6px; margin-top:auto;}
+  .op-train{display:block; text-align:center; padding:9px 0; border:none; border-radius:14px; font-size:0.9rem; color:#fff; background:var(--accent); text-decoration:none; font-weight:700;}
+  .op-explorer{display:block; text-align:center; padding:9px 0; border:1px solid var(--border); border-radius:14px; font-size:0.9rem; color:var(--text); background:var(--tile2); text-decoration:none; font-weight:700;}
   .elo-mini{margin-left:auto; display:flex; gap:0.5rem; font-weight:400;}
   .elo-mini .em{text-align:center; line-height:1.1; border:1px solid var(--border); border-radius:12px; padding:0.3rem 0.7rem; background:var(--tile2); min-width:6rem; box-sizing:border-box;}
   .elo-mini .emn{font-family:var(--display); font-size:1.05rem; font-weight:600; color:var(--board-dark); display:block;}
@@ -1349,12 +1357,12 @@ document.querySelectorAll("#pr-chips .chip").forEach(ch=>{
 
 /* ============================ Data dashboard (pass 2) ============================ */
 const REPERTOIRE = [
-  {name:'London System', color:'white', families:['London System','London Attack']},
-  {name:'Catalan', color:'white', families:['Catalan']},
-  {name:"King's Indian Attack", color:'white', families:["King's Indian Attack"]},
-  {name:'Slav Defense', color:'black', families:['Slav Defense','Slav']},
-  {name:"King's Indian Defense", color:'black', families:["King's Indian Defense","King's Indian"]},
-  {name:'Caro-Kann', color:'black', families:['Caro-Kann']}
+  {name:'London System', color:'white', eco:'D02', slug:'London_System', fen:'rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1', families:['London System','London Attack']},
+  {name:'Catalan', color:'white', eco:'E00', slug:'Catalan_Opening', fen:'rnbqkb1r/pppp1ppp/4pn2/8/2PP4/6P1/PP2PP1P/RNBQKBNR b KQkq - 0 3', families:['Catalan']},
+  {name:"King's Indian Attack", color:'white', eco:'A07', slug:'Kings_Indian_Attack', fen:'rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq - 1 1', families:["King's Indian Attack"]},
+  {name:'Slav Defense', color:'black', eco:'D10', slug:'Slav_Defense', fen:'rnbqkbnr/pp2pppp/2p5/3p4/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3', families:['Slav Defense','Slav']},
+  {name:"King's Indian Defense", color:'black', eco:'E60', slug:'Kings_Indian_Defense', fen:'rnbqkb1r/pppppp1p/5np1/8/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3', families:["King's Indian Defense","King's Indian"]},
+  {name:'Caro-Kann', color:'black', eco:'B10', slug:'Caro-Kann_Defense', fen:'rnbqkbnr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2', families:['Caro-Kann']}
 ];
 let prGames=[], pzThemes=[], rgChart=null, rgSort={c:"date",dir:"desc"};
 const rgShow={ rating:false, accuracy:true, cp:false, blunder:false };
@@ -1506,19 +1514,41 @@ function renderOpeningExplorer(){
     if(me&&me.analysis){ s.bl+=me.analysis.blunder||0; if(me.analysis.accuracy!=null){s.accSum+=me.analysis.accuracy;s.accNb++;} }
   });
   document.getElementById("op-msg").classList.add("hide");
-  document.getElementById("op-grid").innerHTML=REPERTOIRE.map(r=>{
+  document.getElementById("op-grid").innerHTML=REPERTOIRE.map((r,i)=>{
     const s=stats[r.name];
-    const blpg=s.nb>0?Math.round(s.bl/s.nb*10)/10:0;
-    const dens=blpg>=2?"var(--red)":blpg>=1?"var(--orange)":"var(--green)";
-    const acc=s.accNb>0?Math.round(s.accSum/s.accNb)+"%":"—";
-    const body=s.nb>0
-      ? `<div class="op-wdl"><div><div class="n" style="color:var(--green)">${s.w}</div><div class="k">won</div></div>`+
+    const isWhite=r.color==='white';
+    const top=isWhite?'var(--board-light)':'#3d3020';
+    const headTxt=isWhite?'var(--text)':'#fff';
+    const acc=s.accNb>0?Math.round(s.accSum/s.accNb):null;
+    const ringCol=acc==null?'var(--hint)':(acc>=75?'var(--green)':acc>=60?'var(--orange)':'var(--red)');
+    const C=2*Math.PI*20;
+    const played=s.nb>0
+      ? `<div style="font-size:0.92rem;color:var(--text);margin-bottom:2px">${s.nb} game${s.nb!==1?"s":""} played</div>`+
+        `<div class="op-wdl"><div><div class="n" style="color:var(--green)">${s.w}</div><div class="k">won</div></div>`+
         `<div><div class="n" style="color:var(--muted)">${s.d}</div><div class="k">draw</div></div>`+
         `<div><div class="n" style="color:var(--red)">${s.l}</div><div class="k">lost</div></div></div>`+
-        `<div style="font-size:0.8rem;color:var(--muted)">${s.nb} game${s.nb!==1?"s":""} · acc ${acc}</div>`+
-        `<div style="font-size:0.78rem;color:${dens};margin-top:2px">${blpg} blunders/game</div>`
-      : `<div style="font-size:0.85rem;color:var(--hint);padding:0.6rem 0">Not played yet</div>`;
-    return `<div class="op-card"><div class="nm">${r.name}</div><div class="cl">${r.color}</div>${body}</div>`;
+        `<div style="display:flex;justify-content:center;margin:4px 0 2px"><svg width="50" height="50" viewBox="4 4 48 48">`+
+        `<circle cx="28" cy="28" r="20" fill="none" stroke="var(--tile2)" stroke-width="5"/>`+
+        (acc!=null?`<circle cx="28" cy="28" r="20" fill="none" stroke="${ringCol}" stroke-width="5" stroke-dasharray="${(acc/100*C).toFixed(1)} ${C.toFixed(1)}" stroke-dashoffset="${(C/4).toFixed(1)}" stroke-linecap="round"/>`+
+          `<text x="28" y="33" text-anchor="middle" font-size="11" font-weight="700" fill="${ringCol}">${acc}%</text>`:"")+
+        `</svg></div>`
+      : `<div style="font-size:0.92rem;color:var(--muted);margin-bottom:2px">Not played yet</div>`+
+        `<div style="font-size:0.82rem;color:var(--hint)">No games yet</div>`+
+        `<div style="display:flex;justify-content:center;margin:6px 0"><svg width="50" height="50" viewBox="4 4 48 48">`+
+        `<circle cx="28" cy="28" r="20" fill="none" stroke="var(--tile2)" stroke-width="5"/>`+
+        `<text x="28" y="24" text-anchor="middle" dominant-baseline="central" font-size="22" fill="var(--hint)" font-family="serif" opacity="0.55">${["\u265F","\u265E","\u265D","\u265C","\u265B","\u265A"][i%6]}</text></svg></div>`;
+    return `<div class="op-tile">`+
+      `<div class="op-head" style="background:${top};color:${headTxt}">${r.name}</div>`+
+      `<div style="position:relative"><div style="position:absolute;inset:0;background:${top};opacity:0.5"></div>`+
+        `<div style="position:relative;padding:7px 14px;display:flex;align-items:center;justify-content:center;gap:18px;color:${headTxt}">`+
+          `<span class="color-pill ${r.color}">${isWhite?"White":"Black"}</span>`+
+          `<span class="op-eco">${r.eco}</span></div></div>`+
+      `<div style="background:${top};height:14px"></div>`+
+      `<div class="op-body">${played}`+
+        `<div class="op-acts">`+
+          `<a class="op-train" href="https://lichess.org/training/${r.slug}" target="_blank" rel="noopener">Train on Lichess</a>`+
+          `<a class="op-explorer" href="https://lichess.org/analysis#${encodeURIComponent(r.fen)}" target="_blank" rel="noopener">Explorer</a>`+
+        `</div></div></div>`;
   }).join("");
 }
 
