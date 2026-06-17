@@ -81,7 +81,7 @@
   @media(max-width:600px){ .tp-grid{grid-template-columns:repeat(2,1fr);} }
   .tp-tile{position:relative; border:1px solid var(--border); border-radius:14px; padding:0.9rem 0.6rem 0.7rem; text-decoration:none; color:#fff; display:flex; flex-direction:column; gap:0.15rem; height:120px; overflow:hidden; box-sizing:border-box; cursor:pointer; text-align:center;}
   .tp-tile:hover{filter:brightness(0.94);}
-  .tp-tile .rank{position:absolute; top:7px; left:7px; width:23px; height:23px; border:1px solid rgba(255,255,255,0.7); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.64rem; font-weight:600;}
+  .tp-tile .rank{position:absolute; top:7px; left:7px; width:34px; height:34px; border:1px solid rgba(255,255,255,0.7); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.92rem; font-weight:600;}
   .tp-tile .lbl{font-family:var(--display); font-size:1rem; font-weight:700; line-height:1.12;}
   .tp-tile .src{font-size:0.6rem; text-transform:uppercase; letter-spacing:.04em; opacity:0.9;}
   .tp-tile .det{font-size:0.78rem; opacity:0.95; margin-top:auto; padding-top:0.3rem;}
@@ -217,13 +217,13 @@
   .ttp-toggle button{font-family:var(--display); font-weight:700; font-size:0.92rem; letter-spacing:0.05em; text-transform:uppercase; border:none; background:transparent; color:var(--muted); padding:0.45rem 1.5rem; border-radius:999px; cursor:pointer;}
   .ttp-toggle button.on{background:var(--tile); color:var(--text); box-shadow:0 1px 4px rgba(0,0,0,0.12);}
   .ttp-list{display:flex; flex-direction:column; gap:0.4rem;}
-  .ttp-row{display:flex; align-items:center; justify-content:space-between; gap:0.5rem; background:var(--tile); border:1px solid var(--border); border-radius:18px; padding:0.35rem 0.5rem; min-height:54px; cursor:pointer; box-shadow:0 0 8px 1px rgba(115,102,84,0.16); transition:transform 0.08s, opacity 0.15s;}
+  .ttp-row{display:flex; align-items:center; justify-content:space-between; gap:0.5rem; background:var(--tile); border:1px solid var(--border); border-radius:18px; padding:0.175rem 0.5rem; min-height:54px; cursor:pointer; box-shadow:0 0 8px 1px rgba(115,102,84,0.16); transition:transform 0.08s, opacity 0.15s;}
   .ttp-row:active{transform:scale(0.995);}
   .ttp-row.study{background:#ecdfc5; margin-top:0.3rem; box-shadow:0 0 8px 1px rgba(115,102,84,0.45);}
   .ttp-clock{flex:0 0 50px; width:50px; height:50px; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:50%; border:3px solid var(--tile2); color:var(--muted);}
   .ttp-clock .n{font-family:var(--display); font-weight:700; font-size:1.02rem; line-height:1;}
   .ttp-clock .u{font-size:0.52rem; text-transform:uppercase; opacity:0.7;}
-  .ttp-pill{flex:1; text-align:center; background:#f2c79a; border:1px solid var(--border); border-radius:999px; padding:0.82rem 0.5rem; font-family:var(--display); font-weight:700; font-size:0.98rem; letter-spacing:0.05em; text-transform:uppercase; color:#555; box-shadow:0 0 8px 1px rgba(115,102,84,0.26); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .ttp-pill{flex:1; text-align:center; background:#f2c79a; border:1px solid var(--border); border-radius:999px; padding:1.3rem 0.5rem; font-family:var(--display); font-weight:700; font-size:0.98rem; letter-spacing:0.05em; text-transform:uppercase; color:#555; box-shadow:0 0 8px 1px rgba(115,102,84,0.26); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .ttp-row:hover .ttp-pill{opacity:0.82;}
   .ttp-piece{flex:0 0 50px; width:50px; height:50px; display:flex; align-items:center; justify-content:center; font-size:1.7rem; color:var(--accent); opacity:0.5;}
   /* GMT modal */
@@ -1514,6 +1514,7 @@ function renderOpeningExplorer(){
     if(me&&me.analysis){ s.bl+=me.analysis.blunder||0; if(me.analysis.accuracy!=null){s.accSum+=me.analysis.accuracy;s.accNb++;} }
   });
   document.getElementById("op-msg").classList.add("hide");
+  document.getElementById("op-dot").className="dot ok";
   document.getElementById("op-grid").innerHTML=REPERTOIRE.map((r,i)=>{
     const s=stats[r.name];
     const isWhite=r.color==='white';
@@ -1629,7 +1630,8 @@ function renderTTP(){
     row.className="ttp-row"+(b.study?" study":"");
     const left=b.study?`<span class="ttp-clock" style="font-size:1.6rem">\uD83D\uDCD6</span>`
       :`<span class="ttp-clock"><span class="n">${b.min}</span><span class="u">min</span></span>`;
-    row.innerHTML=left+`<span class="ttp-pill">${b.label}</span><span class="ttp-piece">${b.piece}</span>`;
+    const pcStyle=b.piece==="\u265F"?' style="font-size:1.85rem;opacity:0.5"':'';
+    row.innerHTML=left+`<span class="ttp-pill">${b.label}</span><span class="ttp-piece"${pcStyle}>${b.piece}</span>`;
     row.addEventListener("click",()=>{ if(b.gmt) openGmt(); else openAct(b); });
     list.appendChild(row);
   });
