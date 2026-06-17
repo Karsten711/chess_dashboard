@@ -199,6 +199,37 @@
   .hide{display:none !important;}
 
   footer{text-align:center; color:var(--hint); font-size:0.76rem; margin-top:1.4rem;}
+  /* Today's Training */
+  .ttp-toggle{display:flex; gap:0; margin:0.1rem auto 1rem; background:var(--tile2); border:1px solid var(--border); border-radius:999px; padding:4px; width:fit-content;}
+  .ttp-toggle button{font-family:var(--display); font-weight:700; font-size:0.92rem; letter-spacing:0.05em; text-transform:uppercase; border:none; background:transparent; color:var(--muted); padding:0.45rem 1.5rem; border-radius:999px; cursor:pointer;}
+  .ttp-toggle button.on{background:var(--tile); color:var(--text); box-shadow:0 1px 4px rgba(0,0,0,0.12);}
+  .ttp-list{display:flex; flex-direction:column; gap:0.7rem;}
+  .ttp-row{display:flex; align-items:center; justify-content:space-between; gap:0.6rem; background:var(--tile); border:1px solid var(--border); border-radius:22px; padding:0.5rem 0.7rem; min-height:72px; cursor:pointer; box-shadow:0 0 10px 2px rgba(115,102,84,0.18); transition:transform 0.08s, opacity 0.15s;}
+  .ttp-row:active{transform:scale(0.995);}
+  .ttp-row.study{background:#ecdfc5; margin-top:0.5rem; box-shadow:0 0 10px 2px rgba(115,102,84,0.5);}
+  .ttp-clock{flex:0 0 62px; width:62px; height:62px; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:50%; border:4px solid var(--tile2); color:var(--muted);}
+  .ttp-clock .n{font-family:var(--display); font-weight:700; font-size:1.2rem; line-height:1;}
+  .ttp-clock .u{font-size:0.58rem; text-transform:uppercase; opacity:0.7;}
+  .ttp-pill{flex:1; text-align:center; background:#f2c79a; border:1px solid var(--border); border-radius:999px; padding:0.85rem 0.6rem; font-family:var(--display); font-weight:700; font-size:1.05rem; letter-spacing:0.05em; text-transform:uppercase; color:#555; box-shadow:0 0 10px 2px rgba(115,102,84,0.28); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .ttp-row:hover .ttp-pill{opacity:0.82;}
+  .ttp-piece{flex:0 0 62px; width:62px; height:62px; display:flex; align-items:center; justify-content:center; font-size:2rem; color:var(--accent); opacity:0.5;}
+  /* GMT modal */
+  .gmt-overlay{position:fixed; inset:0; background:rgba(40,35,24,0.6); display:none; align-items:flex-start; justify-content:center; padding:1.1rem; overflow:auto; z-index:50;}
+  .gmt-overlay.show{display:flex;}
+  .gmt-modal{background:var(--tile); border:1px solid var(--border); border-radius:var(--radius); max-width:540px; width:100%; padding:1.1rem; box-shadow:0 12px 40px rgba(0,0,0,0.3);}
+  .gmt-head{display:flex; align-items:center; justify-content:space-between; gap:0.6rem; margin-bottom:0.3rem;}
+  .gmt-open{font-family:var(--display); font-weight:700; font-size:1.15rem;}
+  .gmt-tag{font-size:0.84rem; color:var(--hint); margin-bottom:0.7rem;}
+  .gmt-info{display:flex; flex-wrap:wrap; gap:0.2rem 0.9rem; font-size:0.8rem; color:var(--muted); margin-bottom:0.7rem;}
+  .gmt-q{background:var(--tile2); border:1px solid var(--border); border-radius:12px; padding:0.7rem 0.8rem; font-size:0.96rem; margin:0.7rem 0;}
+  .gmt-timer{display:flex; align-items:center; gap:0.7rem; margin:0.6rem 0;}
+  .gmt-time{font-family:var(--display); font-size:1.5rem; font-weight:700; font-variant-numeric:tabular-nums;}
+  .gmt-post{display:none; border-top:1px solid var(--border); margin-top:0.8rem; padding-top:0.7rem;}
+  .gmt-post.show{display:block;}
+  .gmt-canon{font-family:var(--display); font-weight:700; font-size:1.05rem; margin-bottom:0.4rem;}
+  .gmt-reason{font-size:0.9rem; color:var(--muted); line-height:1.5;}
+  .gmt-foot{display:flex; gap:0.5rem; margin-top:0.8rem;}
+  .gmt-foot button{flex:1;}
 </style>
 </head>
 <body>
@@ -216,6 +247,48 @@
   </header>
 
   <!-- RATED GAMES -->
+  <!-- TODAY'S TRAINING -->
+  <section class="card" id="sec-ttp">
+    <h2><span class="dot" id="ttp-dot"></span> Today's Training</h2>
+    <div class="ttp-toggle" id="ttp-toggle">
+      <button data-mode="study" class="on">Study</button>
+      <button data-mode="play">Play</button>
+    </div>
+    <div class="ttp-list" id="ttp-list"></div>
+  </section>
+
+  <!-- GM FOCUS / GMT TRAINER -->
+  <div class="gmt-overlay" id="gmt-overlay">
+    <div class="gmt-modal">
+      <div class="gmt-head">
+        <span class="gmt-open" id="gmt-open">GM Focus</span>
+        <button class="ghost" id="gmt-close" style="padding:0.3rem 0.8rem">Close</button>
+      </div>
+      <div class="gmt-tag" id="gmt-tag"></div>
+      <div class="gmt-info" id="gmt-info"></div>
+      <div class="board-wrap">
+        <div class="coords-rank" id="gmt-ranks"></div>
+        <div class="board theme-brown" id="gmt-board"></div>
+        <div class="coords-corner"></div>
+        <div class="coords-file" id="gmt-files"></div>
+      </div>
+      <div class="gmt-timer">
+        <span class="gmt-time" id="gmt-time">15:00</span>
+        <button class="ghost" id="gmt-timer-btn" style="flex:0 0 auto; padding:0.45rem 1rem">Start</button>
+      </div>
+      <div class="gmt-q" id="gmt-q"></div>
+      <button id="gmt-reveal" style="width:100%">Reveal</button>
+      <div class="gmt-post" id="gmt-post">
+        <div class="gmt-canon" id="gmt-canon"></div>
+        <div class="gmt-reason" id="gmt-reason"></div>
+      </div>
+      <div class="gmt-foot">
+        <a class="ghost" id="gmt-game" href="#" target="_blank" rel="noopener" style="flex:1; text-align:center; padding:0.75rem; border-radius:14px; text-decoration:none; display:inline-block">Open game ↗</a>
+        <button id="gmt-next">Next →</button>
+      </div>
+    </div>
+  </div>
+
   <section class="card" id="sec-rg">
     <h2><span class="dot" id="rg-dot"></span> Rated Games<span class="elo-mini" id="rg-elo">
       <span class="em"><span class="emn" id="elo-cl">—</span><span class="eml">Classical</span></span>
@@ -1415,10 +1488,154 @@ document.querySelectorAll("#rg-table th").forEach(th=>{
     renderRatedGames(); });
 });
 
+/* ===================== Today's Training ===================== */
+const TTP_STUDY=[
+  {label:"Openings", min:10, piece:"\u265F", url:"https://chessbook.com/"},
+  {label:"Tactics",  min:15, piece:"\u265E", section:"sec-tp"},
+  {label:"Visualize",min:10, piece:"\u265D", url:"https://listudy.org/en/blind-tactics"},
+  {label:"GM Focus", min:15, piece:"\u265A", gmt:true},
+  {label:"Endgame",  min:10, piece:"\u265C", url:"https://www.chess.com/endgames"},
+  {label:"Study",    min:45, piece:"\u265B", url:"https://www.chessable.com/", study:true}
+];
+const TTP_PLAY=[
+  {label:"Focus",  min:20, piece:"\u265F", section:"sec-op"},
+  {label:"Tactics",min:10, piece:"\u265E", url:"https://lichess.org/training"},
+  {label:"Play",   min:60, piece:"\u265D", url:"https://lichess.org/"},
+  {label:"Review", min:30, piece:"\u265A", section:"sec-rg"},
+  {label:"Unwind", min:30, piece:"\u265C"},
+  {label:"Study",  min:30, piece:"\u265B", url:"https://www.chessable.com/", study:true}
+];
+let ttpMode=localStorage.getItem("ct_ttp_mode")||"study";
+function renderTTP(){
+  const list=document.getElementById("ttp-list"); if(!list) return;
+  document.querySelectorAll("#ttp-toggle button").forEach(b=>b.classList.toggle("on", b.dataset.mode===ttpMode));
+  const blocks=ttpMode==="play"?TTP_PLAY:TTP_STUDY;
+  list.innerHTML="";
+  blocks.forEach(b=>{
+    const row=document.createElement("div");
+    row.className="ttp-row"+(b.study?" study":"");
+    const left=b.study?`<span class="ttp-clock" style="font-size:1.6rem">\uD83D\uDCD6</span>`
+      :`<span class="ttp-clock"><span class="n">${b.min}</span><span class="u">min</span></span>`;
+    row.innerHTML=left+`<span class="ttp-pill">${b.label}</span><span class="ttp-piece">${b.piece}</span>`;
+    row.addEventListener("click",()=>{
+      if(b.gmt) openGmt();
+      else if(b.section){ const el=document.getElementById(b.section); if(el) el.scrollIntoView({behavior:"smooth",block:"start"}); }
+      else if(b.url) window.extOpen(b.url);
+    });
+    list.appendChild(row);
+  });
+}
+document.getElementById("ttp-toggle").addEventListener("click",e=>{
+  const btn=e.target.closest("button"); if(!btn) return;
+  ttpMode=btn.dataset.mode; localStorage.setItem("ct_ttp_mode",ttpMode); renderTTP();
+});
+
+/* ----- GMT trainer ----- */
+const GMT_OPENING={caro:"Caro-Kann",london:"London System",slav:"Slav Defense",catalan:"Catalan",kid:"King's Indian Defense",kia:"King's Indian Attack"};
+let gmtPool=null, gmtCur=null;
+function gmtSeen(){ try{ return JSON.parse(localStorage.getItem("ct_gmt_seen")||"[]"); }catch(e){ return []; } }
+function gmtMarkSeen(id){ const s=gmtSeen(); if(id&&!s.includes(id)){ s.push(id); localStorage.setItem("ct_gmt_seen",JSON.stringify(s)); } }
+async function gmtLoad(){ if(gmtPool) return gmtPool; try{ const r=await fetch("./gmt_pool.json"); gmtPool=await r.json(); }catch(e){ gmtPool=[]; } return gmtPool; }
+function gmtPick(){
+  if(!gmtPool||!gmtPool.length) return null;
+  const seen=gmtSeen(); let pool=gmtPool.filter(p=>!seen.includes(p.id));
+  if(!pool.length){ localStorage.setItem("ct_gmt_seen","[]"); pool=gmtPool; }
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+function gmtCanonSan(g){
+  if(!g.canonical_move||!g.fen_start) return g.canonical_move||"";
+  const u=String(g.canonical_move).trim();
+  if(!/^[a-h][1-8][a-h][1-8][nbrq]?$/.test(u)) return u;
+  try{ const c=new Chess(g.fen_start); const m=c.move({from:u.slice(0,2),to:u.slice(2,4),promotion:u.slice(4,5)||undefined});
+    if(!m||!m.san) return u; const fp=String(g.fen_start).split(" "); const num=fp[5]||"?";
+    return (fp[1]==="w"?num+".":num+"...")+" "+m.san; }catch(e){ return u; }
+}
+function gmtRenderBoard(fen,color,canonUci,revealed){
+  const board=fenToBoard(fen); const flip=(color==="black");
+  const files=[0,1,2,3,4,5,6,7], ranks=[7,6,5,4,3,2,1,0];
+  const fo=flip?files.slice().reverse():files, ro=flip?ranks.slice().reverse():ranks;
+  const bf=canonUci?canonUci.slice(0,2):"", bt=canonUci?canonUci.slice(2,4):"";
+  let html="";
+  for(const ry of ro){ for(const fx of fo){
+    const sq=String.fromCharCode(97+fx)+(ry+1); const light=(fx+ry)%2===1;
+    let cls="sq "+(light?"l":"d"); if(revealed&&(sq===bf||sq===bt)) cls+=" hl-best";
+    let inner=""; if(board[sq]){ const [p,c]=board[sq]; inner=`<div class="pc" style="background-image:${pieceUri(p.toUpperCase(),c)}"></div>`; }
+    html+=`<div class="${cls}">${inner}</div>`;
+  }}
+  const el=document.getElementById("gmt-board"); el.className="board theme-"+boardTheme; el.innerHTML=html;
+  document.getElementById("gmt-ranks").innerHTML=ro.map(ry=>`<div>${ry+1}</div>`).join("");
+  document.getElementById("gmt-files").innerHTML=fo.map(fx=>`<div>${String.fromCharCode(97+fx)}</div>`).join("");
+}
+function gmtShow(g){
+  gmtCur=g;
+  document.getElementById("gmt-open").textContent=GMT_OPENING[g.opening_slug]||g.opening_slug||"GM Focus";
+  document.getElementById("gmt-tag").textContent=g.theme_tag||"";
+  const info=[];
+  if(g.white&&g.black) info.push(`${g.white}${g.white_elo?` (${g.white_elo})`:""} vs ${g.black}${g.black_elo?` (${g.black_elo})`:""}`);
+  if(g.date) info.push(g.date);
+  if(g.shift_cp) info.push(`shift ${g.shift_cp} cp`);
+  info.push((g.shift_color==="black"?"Black":"White")+" to move");
+  document.getElementById("gmt-info").textContent=info.join("  \u00B7  ");
+  document.getElementById("gmt-q").textContent=g.plan_question||"What is the best plan here?";
+  document.getElementById("gmt-post").classList.remove("show");
+  document.getElementById("gmt-reveal").style.display="";
+  const link=document.getElementById("gmt-game"); link.href=g.reference_game||"#"; link.style.display=g.reference_game?"":"none";
+  gmtRenderBoard(g.fen_start,g.shift_color,g.canonical_move,false);
+}
+function openGmt(){
+  document.getElementById("gmt-overlay").classList.add("show");
+  gmtTimerReset();
+  gmtLoad().then(()=>{ const g=gmtPick(); if(g) gmtShow(g); else document.getElementById("gmt-q").textContent="Pool not found \u2014 upload gmt_pool.json to the repo."; });
+}
+function gmtClose(){ document.getElementById("gmt-overlay").classList.remove("show"); gmtTimerStop(); }
+document.getElementById("gmt-close").addEventListener("click",gmtClose);
+document.getElementById("gmt-overlay").addEventListener("click",e=>{ if(e.target.id==="gmt-overlay") gmtClose(); });
+document.getElementById("gmt-reveal").addEventListener("click",()=>{
+  if(!gmtCur) return;
+  document.getElementById("gmt-canon").textContent="Canonical move: "+gmtCanonSan(gmtCur);
+  document.getElementById("gmt-reason").textContent=gmtCur.reasoning||"";
+  document.getElementById("gmt-post").classList.add("show");
+  document.getElementById("gmt-reveal").style.display="none";
+  gmtRenderBoard(gmtCur.fen_start,gmtCur.shift_color,gmtCur.canonical_move,true);
+});
+document.getElementById("gmt-next").addEventListener("click",()=>{
+  if(gmtCur) gmtMarkSeen(gmtCur.id);
+  const g=gmtPick(); if(g) gmtShow(g); gmtTimerReset();
+});
+
+/* GMT timer + Tibetan gong */
+let _gmtAudio=null;
+function _audioCtx(){ try{ if(!_gmtAudio) _gmtAudio=new (window.AudioContext||window.webkitAudioContext)(); if(_gmtAudio.state==="suspended") _gmtAudio.resume(); return _gmtAudio; }catch(e){ return null; } }
+function gmtGong(){
+  const ctx=_audioCtx(); if(!ctx) return; const now=ctx.currentTime, f=92;
+  [[1,0.40,8.5],[2.66,0.13,5.5],[4.20,0.055,3.5],[6.80,0.018,2.2]].forEach(a=>{
+    const o=ctx.createOscillator(), g=ctx.createGain(); o.type="sine"; o.frequency.value=f*a[0];
+    g.gain.setValueAtTime(0.0001,now); g.gain.exponentialRampToValueAtTime(a[1],now+0.012); g.gain.exponentialRampToValueAtTime(0.0001,now+a[2]);
+    o.connect(g).connect(ctx.destination); o.start(now); o.stop(now+a[2]+0.05);
+  });
+}
+let gmtTimerId=null, gmtRemain=900;
+function gmtFmt(s){ const m=Math.floor(s/60), ss=s%60; return m+":"+(ss<10?"0":"")+ss; }
+function gmtTimerStop(){ if(gmtTimerId){ clearInterval(gmtTimerId); gmtTimerId=null; } }
+function gmtTimerReset(){ gmtTimerStop(); gmtRemain=900; document.getElementById("gmt-time").textContent=gmtFmt(gmtRemain); document.getElementById("gmt-timer-btn").textContent="Start"; }
+function gmtTimerStart(){
+  if(gmtTimerId) return;
+  document.getElementById("gmt-timer-btn").textContent="Pause";
+  gmtTimerId=setInterval(()=>{
+    gmtRemain--; document.getElementById("gmt-time").textContent=gmtFmt(Math.max(0,gmtRemain));
+    if(gmtRemain<=0){ clearInterval(gmtTimerId); gmtTimerId=null; gmtGong(); document.getElementById("gmt-timer-btn").textContent="Done"; }
+  },1000);
+}
+document.getElementById("gmt-timer-btn").addEventListener("click",()=>{
+  if(gmtTimerId){ gmtTimerStop(); document.getElementById("gmt-timer-btn").textContent="Resume"; }
+  else if(gmtRemain>0) gmtTimerStart();
+});
+
 /* ============================ Start ============================ */
 (function(){ const saved = localStorage.getItem(TOKEN_KEY); if(saved) verifyToken(saved).then(ok=>{ if(ok) loadDashboardTiles(); }); })();
 initEngine();
 renderStats();
+renderTTP();
 </script>
 </body>
 </html>
