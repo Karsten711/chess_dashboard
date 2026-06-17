@@ -74,9 +74,9 @@
   table.rg th{position:sticky; top:0; background:var(--tile2); color:var(--muted); font-weight:600; text-align:left; padding:0.5rem 0.55rem; font-size:0.68rem; text-transform:uppercase; letter-spacing:.02em; cursor:pointer; user-select:none; white-space:nowrap;}
   table.rg td{padding:0.42rem 0.55rem; border-top:1px solid var(--border); color:var(--text); white-space:nowrap; cursor:pointer;}
   table.rg tbody tr:hover td{background:rgba(0,0,0,0.03);}
-  .coin{display:inline-block; width:14px; height:14px; border-radius:50%; border:1px solid var(--border); vertical-align:-2px;}
-  .coin.white{background:#f2efe9;} .coin.black{background:#3a342c;}
-  .res-w{color:var(--green); font-weight:600;} .res-l{color:var(--red);} .res-d{color:var(--muted);}
+  .coin{display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; border:1px solid var(--border); font-size:0.72rem; font-weight:700; line-height:1; vertical-align:middle;}
+  .coin.white{background:#f2efe9; color:var(--text);} .coin.black{background:#3a342c; color:#f2efe9;}
+  table.rg td.res-w{color:var(--green); font-weight:600;} table.rg td.res-l{color:var(--red); font-weight:600;} table.rg td.res-d{color:var(--muted);}
   .tp-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:0.7rem; margin-top:0.4rem;}
   @media(max-width:600px){ .tp-grid{grid-template-columns:repeat(2,1fr);} }
   .tp-tile{position:relative; border:1px solid var(--border); border-radius:14px; padding:0.9rem 0.6rem 0.7rem; text-decoration:none; color:#fff; display:flex; flex-direction:column; gap:0.15rem; height:120px; overflow:hidden; box-sizing:border-box; cursor:pointer; text-align:center;}
@@ -227,8 +227,12 @@
   .act-dur{font-size:0.82rem; color:var(--hint); margin-bottom:1rem;}
   .act-timer{display:flex; align-items:center; justify-content:center; gap:0.7rem; margin:0.4rem 0 1.1rem;}
   .act-time{font-family:var(--display); font-size:2rem; font-weight:700; font-variant-numeric:tabular-nums; min-width:5rem;}
-  .act-adj{width:2.4rem; height:2.4rem; border-radius:50%; border:1px solid var(--border); background:var(--tile2); font-size:1.2rem; font-weight:700; cursor:pointer; color:var(--text);}
+  .act-adj{display:inline-flex; align-items:center; justify-content:center; width:2.4rem; height:2.4rem; padding:0; line-height:1; border-radius:50%; border:1px solid var(--border); background:var(--tile2); font-size:1.2rem; font-weight:700; cursor:pointer; color:var(--text);}
   .act-foot{display:flex; flex-direction:column; gap:0.6rem; margin-top:0.4rem;}
+  .act-foot > button, .act-foot .act-go{display:block; width:100%; box-sizing:border-box; padding:0.8rem 1.2rem; border-radius:14px; font-family:var(--display); font-weight:700; font-size:1rem; text-align:center; text-decoration:none;}
+  .act-foot .act-go{background:#f2c79a; color:#5a4a22; letter-spacing:0.03em;}
+  #act-extra{display:flex; flex-direction:column; gap:0.6rem;}
+  #act-extra:empty{display:none;}
   .gmt-head{display:flex; align-items:center; justify-content:space-between; gap:0.6rem; margin-bottom:0.3rem;}
   .gmt-open{font-family:var(--display); font-weight:700; font-size:1.15rem;}
   .gmt-tag{font-size:0.84rem; color:var(--hint); margin-bottom:0.7rem;}
@@ -354,7 +358,8 @@
       </div>
       <div class="act-foot">
         <button id="act-start">Start</button>
-        <a class="act-go" id="act-go" href="#" target="_blank" rel="noopener" style="display:none; text-align:center; padding:0.85rem; border-radius:14px; text-decoration:none; background:#f2c79a; color:#5a4a22; font-weight:700; font-family:var(--display); letter-spacing:0.03em">Open</a>
+        <a class="act-go" id="act-go" href="#" target="_blank" rel="noopener" style="display:none">Open</a>
+        <div id="act-extra"></div>
       </div>
     </div>
   </div>
@@ -1425,10 +1430,10 @@ function rgRow(g){
   const oppRating=opp&&opp.rating!=null?opp.rating:"?";
   const cell=(v,col)=> (an&&v>0)?`<span style="color:${col};font-weight:600">${v}</span>`:`<span style="color:var(--hint)">—</span>`;
   const accNum=(an&&an.accuracy!=null)?an.accuracy:null;
-  const acc=accNum!=null?Math.round(accNum)+"%":`<span style="color:var(--hint)">—</span>`;
+  const acc=accNum!=null?`<span style="color:${accNum>=70?'var(--green)':'var(--red)'};font-weight:600">${Math.round(accNum)}%</span>`:`<span style="color:var(--hint)">—</span>`;
   const html=`<tr onclick="extOpen('https://lichess.org/${g.id}')" title="Open on Lichess">`+
     `<td style="color:var(--muted)">${date}</td>`+
-    `<td><span class="coin ${isWhite?'white':'black'}"></span></td>`+
+    `<td><span class="coin ${isWhite?'white':'black'}">${isWhite?'W':'B'}</span></td>`+
     `<td>${oppName}</td>`+
     `<td style="color:var(--muted)">${oppRating}</td>`+
     `<td class="${rc}">${result}</td>`+
@@ -1437,7 +1442,7 @@ function rgRow(g){
     `<td style="text-align:center">${cell(an?an.blunder:0,'var(--red)')}</td>`+
     `<td style="text-align:center">${cell(an?an.mistake:0,'var(--orange)')}</td>`+
     `<td style="text-align:center">${cell(an?an.inaccuracy:0,'var(--muted)')}</td>`+
-    `<td style="text-align:center;color:var(--hint)">${acc}</td></tr>`;
+    `<td style="text-align:center">${acc}</td></tr>`;
   return {dateMs:g.createdAt, result, oppRating:+oppRating||0, moves, bl:an?an.blunder||0:-1, accNum, html};
 }
 
@@ -1579,6 +1584,10 @@ const TTP_PLAY=[
   {label:"Unwind", min:30, piece:"\u265C"},
   {label:"Study",  min:30, piece:"\u265B", url:"https://www.chessable.com/", urlLabel:"Open Chessable", study:true}
 ];
+const TTP_EXTRA_LINKS={
+  "Tactics_15":[{label:"ChessTempo",url:"https://chesstempo.com/chess-tactics/"}],
+  "Endgame_10":[{label:"Listudy",url:"https://listudy.org/en/endgames"},{label:"ChessTempo",url:"https://chesstempo.com/chess-endgames/"}]
+};
 let ttpMode=localStorage.getItem("ct_ttp_mode")||"study";
 function renderTTP(){
   const list=document.getElementById("ttp-list"); if(!list) return;
@@ -1716,6 +1725,9 @@ function openAct(b){
   else if(b.section){ go.style.display="block"; go.textContent="Go to "+(b.sectionLabel||b.section); go.href="#";
     go.onclick=(e)=>{ e.preventDefault(); actClose(); const el=document.getElementById(b.section); if(el) el.scrollIntoView({behavior:"smooth",block:"start"}); }; }
   else { go.style.display="none"; }
+  const extraEl=document.getElementById("act-extra");
+  const extra=TTP_EXTRA_LINKS[b.label+"_"+(b.min||10)]||[];
+  extraEl.innerHTML=extra.map(x=>`<a class="act-go" href="${x.url}" target="_blank" rel="noopener">${x.label} \u2197</a>`).join("");
   document.getElementById("act-overlay").classList.add("show");
 }
 function actClose(){ document.getElementById("act-overlay").classList.remove("show"); actTimerStop(); }
