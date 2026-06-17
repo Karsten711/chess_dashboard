@@ -1373,7 +1373,7 @@ function renderOpeningExplorer(){
 
 async function renderPriorities(){
   let items=[]; try{ items=await idbAll("items"); }catch(e){ items=[]; }
-  const skip=new Set(["opening","middlegame","endgame","check","materialGain"]);
+  const skip=new Set(["check","materialGain","tactical"]);
   const byMotif={};
   items.forEach(it=>{ const sev=(it.severity||"").toLowerCase(); const w=sev==="blunder"?3:sev==="mistake"?2:1;
     (it.motifs||[]).forEach(m=>{ if(skip.has(m)) return;
