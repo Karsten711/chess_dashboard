@@ -1327,9 +1327,12 @@ function buildGamesChart(){
   if(rgShow.accuracy) ds.push({label:"Accuracy",data:accu,borderColor:"#2a5f8f",borderWidth:1.8,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y2"});
   if(rgShow.cp)       ds.push({label:"CP loss",data:cp,borderColor:"#c0321a",borderWidth:1.8,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y3"});
   if(rgShow.blunder)  ds.push({label:"Blunder score",data:bls,borderColor:"#7a3a8a",borderWidth:1.8,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y3"});
+  const avgOf=arr=>{const v=arr.filter(x=>x!=null); return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;};
+  ds.slice().forEach(d=>{ const m=avgOf(d.data); if(m==null) return;
+    ds.push({label:d.label+" avg",data:d.data.map(()=>Math.round(m*10)/10),borderColor:d.borderColor,borderWidth:1,borderDash:[4,4],pointRadius:0,tension:0,spanGaps:true,yAxisID:d.yAxisID,_avg:true}); });
   rgChart=new Chart(document.getElementById("rg-chart"),{type:"line",data:{labels:lab,datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},
-      plugins:{legend:{display:false},tooltip:{backgroundColor:"#2a2318",titleColor:"#faf8f4",bodyColor:"#faf8f4",padding:8}},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:"#2a2318",titleColor:"#faf8f4",bodyColor:"#faf8f4",padding:8,filter:(it)=>!(it.dataset&&it.dataset._avg)}},
       scales:{
         x:{ticks:{font:{size:10},color:"#736654"},grid:{display:false}},
         y:{display:rgShow.rating,position:"left",ticks:{font:{size:10},color:"#736654"},grid:{color:"rgba(0,0,0,0.05)"}},
