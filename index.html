@@ -33,10 +33,21 @@
   }
   .wrap{max-width:990px; margin:0 auto;}
 
-  header{margin:0 0 1.3rem 2px;}
+  header{display:flex; align-items:flex-start; gap:1.2rem; margin:0 0 1.3rem 2px;}
+  .head-title{flex:2 1 0; min-width:0;}
   h1{font-family:var(--display); font-weight:600; font-size:2.1rem;
      letter-spacing:-0.01em; color:var(--board-dark); margin:0;}
   .sub{color:var(--muted); font-size:0.95rem; margin-top:0.15rem;}
+  .head-quote{flex:1 1 0; min-width:0; align-self:center; text-align:right;
+     cursor:pointer; color:var(--tile); font-style:italic;
+     font-size:clamp(0.9rem,1.5vw,1.12rem); line-height:1.4;}
+  #quote-author{display:block; font-style:normal; margin-top:0.4rem;
+     font-size:0.72rem; letter-spacing:0.06em; text-transform:uppercase;
+     font-weight:600; color:var(--tile); opacity:0.7;}
+  @media (max-width:560px){
+    header{flex-direction:column; gap:0.6rem;}
+    .head-quote{text-align:left; align-self:stretch;}
+  }
 
   .card{background:var(--tile); border:1px solid var(--border);
     border-radius:var(--radius); padding:1.15rem 1.2rem;
@@ -150,8 +161,14 @@
 <div class="wrap">
 
   <header>
-    <h1>Chess Trainer</h1>
-    <div class="sub">iPad version · Blunder Review · works offline</div>
+    <div class="head-title">
+      <h1>Chess Trainer</h1>
+      <div class="sub">iPad version · Blunder Review · works offline</div>
+    </div>
+    <div class="head-quote" id="quote-rotator" title="Tap for next quote">
+      <span id="quote-text"></span>
+      <span id="quote-author"></span>
+    </div>
   </header>
 
   <!-- LICHESS -->
@@ -820,6 +837,115 @@ function rerenderCurrent(){
   const e = reviewList[reviewIdx];
   renderBoard(e.fen_before, e.played_move, e.best_move, e.color, revealed);
 }
+/* ============================ Quote rotator ============================ */
+const QUOTES = [
+  { text: "A good player is always lucky.", author: "Jos\u00e9 Ra\u00fal Capablanca" },
+  { text: "A knight on the rim is grim.", author: "Chess maxim" },
+  { text: "A passed pawn increases in strength as the number of pieces on the board diminishes.", author: "Jos\u00e9 Ra\u00fal Capablanca" },
+  { text: "Activate your least active piece.", author: "Chess heuristic" },
+  { text: "After the game, the king and the pawn go into the same box.", author: "Italian proverb" },
+  { text: "Always consider the most forcing moves first.", author: "Chess heuristic" },
+  { text: "Ask your pieces how they're feeling.", author: "Yasser Seirawan" },
+  { text: "Chess, above all, teaches you to be objective.", author: "Alexander Alekhine" },
+  { text: "Chess as a sport requires a lot of mental stamina.", author: "Viswanathan Anand" },
+  { text: "Chess cannot be taught. Chess can only be learned.", author: "Mikhail Botvinnik" },
+  { text: "Chess holds its master in its own bonds.", author: "Albert Einstein" },
+  { text: "Chess is a matter of vanity.", author: "Tigran Petrosian" },
+  { text: "Chess is everything: art, science and sport.", author: "Anatoly Karpov" },
+  { text: "Chess is life in miniature.", author: "Garry Kasparov" },
+  { text: "Chess is mental torture.", author: "Garry Kasparov" },
+  { text: "Chess is not a game for dictators.", author: "Garry Kasparov" },
+  { text: "Chess is played with the mind and not with the hands.", author: "Renaud and Kahn" },
+  { text: "Chess is the art of analysis.", author: "Mikhail Botvinnik" },
+  { text: "Chess is the gymnasium of the mind.", author: "Blaise Pascal" },
+  { text: "Chess, like love, is infectious at any age.", author: "Salo Flohr" },
+  { text: "Chess, like love, like music, has the power to make people happy.", author: "Siegbert Tarrasch" },
+  { text: "Chess mastery essentially consists of analyzing chess positions accurately.", author: "Mikhail Botvinnik" },
+  { text: "Counterattack is the soul of the game.", author: "Vera Menchik" },
+  { text: "Develop knights before bishops.", author: "Opening maxim" },
+  { text: "Do not move the same piece twice in the opening unless strictly necessary.", author: "Opening maxim" },
+  { text: "Even a poor plan is better than no plan at all.", author: "Mikhail Chigorin" },
+  { text: "Every chess master was once a beginner.", author: "Irving Chernev" },
+  { text: "Every opponent teaches you something.", author: "Anna Ushenina" },
+  { text: "He who fears an isolated pawn should not play chess.", author: "Siegbert Tarrasch" },
+  { text: "He who has a why to live for can bear almost any how.", author: "Friedrich Nietzsche" },
+  { text: "Help your pieces so they can help you.", author: "Paul Morphy" },
+  { text: "I believe in logical and correct play.", author: "Tigran Petrosian" },
+  { text: "I don't believe in psychology. I believe in good moves.", author: "Bobby Fischer" },
+  { text: "I realized a simple truth: not only was I worried, but so was my opponent.", author: "Mikhail Tal" },
+  { text: "I regard chess as an art form where creativity prevails over other factors.", author: "Vasily Smyslov" },
+  { text: "I see only one move ahead, but always the correct one.", author: "Jos\u00e9 Ra\u00fal Capablanca" },
+  { text: "If you are confused in a position, just follow your heart.", author: "Ju Wenjun" },
+  { text: "If you have an advantage in chess, you must attack; otherwise, your advantage will disappear.", author: "Wilhelm Steinitz" },
+  { text: "If you see that you cannot win, do everything in your power to resist.", author: "Ding Liren" },
+  { text: "Inspiration exists, but it has to find you working.", author: "Pablo Picasso" },
+  { text: "It is eminently and emphatically the philosopher's game.", author: "Paul Morphy" },
+  { text: "It is not a move, even the best move, that you must seek, but a realizable plan.", author: "Eugene Znosko-Borovsky" },
+  { text: "It's not that I'm so smart, it's just that I stay with problems longer.", author: "Albert Einstein" },
+  { text: "Life can only be understood backwards; but it must be lived forwards.", author: "S\u00f8ren Kierkegaard" },
+  { text: "Life is a kind of Chess.", author: "Benjamin Franklin" },
+  { text: "Long analysis, wrong analysis.", author: "Bent Larsen" },
+  { text: "Methodical thinking is more important than ability.", author: "Alexander Alekhine" },
+  { text: "Never play to win a pawn while your development is yet unfinished.", author: "Aron Nimzowitsch" },
+  { text: "Of chess it has been said that life is not long enough for it, but that is the fault of life, not chess.", author: "Irving Chernev" },
+  { text: "On the chessboard, lies and hypocrisy do not survive long.", author: "Emanuel Lasker" },
+  { text: "One bad move nullifies forty good ones.", author: "I. A. Horowitz" },
+  { text: "Passed pawns must be pushed.", author: "Chess maxim" },
+  { text: "Pawn endings are to chess what putting is to golf.", author: "Cecil Purdy" },
+  { text: "Pawns are the soul of chess.", author: "Fran\u00e7ois-Andr\u00e9 Philidor" },
+  { text: "Play the opening like a book, the middlegame like a magician, the endgame like a machine.", author: "Rudolf Spielmann" },
+  { text: "Rooks belong behind passed pawns.", author: "Tarrasch rule" },
+  { text: "Simplicity is the ultimate sophistication.", author: "Leonardo da Vinci" },
+  { text: "Sometimes it's more important to find not the best move in the position, but the move that would lead your opponent to make a mistake.", author: "Alexandra Kosteniuk" },
+  { text: "Strategy requires thinking, while tactics require keen observation.", author: "Max Euwe" },
+  { text: "Strategy requires thought; tactics require observation.", author: "Max Euwe" },
+  { text: "Tactics flow from a superior position.", author: "Bobby Fischer" },
+  { text: "The best indicator of a chess player's form is their ability to sense the climax of the game.", author: "Boris Spassky" },
+  { text: "The blunders are all there on the board, waiting to be made.", author: "Savielly Tartakower" },
+  { text: "The defensive power of a pinned piece is only imaginary.", author: "Aron Nimzowitsch" },
+  { text: "The essence of chess is thinking about what chess is.", author: "David Bronstein" },
+  { text: "The hardest game to win is a won game.", author: "Emanuel Lasker" },
+  { text: "The mistakes are there, waiting to be made.", author: "Savielly Tartakower" },
+  { text: "The older I grow, the more I value pawns.", author: "Paul Keres" },
+  { text: "The pin is mightier than the sword.", author: "Fred Reinfeld" },
+  { text: "The public must come to see that chess is a violent sport. Chess is mental torture.", author: "Garry Kasparov" },
+  { text: "The threat is stronger than the execution.", author: "Aron Nimzowitsch" },
+  { text: "There are more adventures on a chessboard than on all the seas of the world.", author: "Pierre Mac Orlan" },
+  { text: "There are two types of battles in chess: one is purely chess, and the other is psychological.", author: "Tan Zhongyi" },
+  { text: "To avoid losing a piece, many a player has lost the game.", author: "Savielly Tartakower" },
+  { text: "To improve your game, you must study the endgame before anything else.", author: "Jos\u00e9 Ra\u00fal Capablanca" },
+  { text: "We do not see things as they are, we see them as we are.", author: "Ana\u00efs Nin" },
+  { text: "When ahead in material, trade pieces but not pawns; when behind, trade pawns but not pieces.", author: "Classical practical rule" },
+  { text: "When in trouble, look for a tactic.", author: "Yasser Seirawan" },
+  { text: "When you don't know what to do, wait for an opportunity.", author: "Savielly Tartakower" },
+  { text: "When you see a good move, look for a better one.", author: "Emanuel Lasker" },
+  { text: "When you see a good move, wait \u2014 look for a better one.", author: "Emanuel Lasker" },
+  { text: "Win with grace, lose with dignity.", author: "Susan Polgar" },
+  { text: "Without error there can be no brilliance.", author: "Garry Kasparov" },
+  { text: "Without the element of enjoyment, it is not worth trying to excel at anything.", author: "Magnus Carlsen" },
+  { text: "You do not rise to the level of your goals. You fall to the level of your systems.", author: "James Clear" },
+  { text: "You have power over your mind, not outside events. Realize this, and you will find strength.", author: "Marcus Aurelius" },
+];
+let _lastQuoteIdx = -1;
+function quoteNext(){
+  if(QUOTES.length === 0) return;
+  let i = Math.floor(Math.random()*QUOTES.length);
+  if(QUOTES.length > 1 && i === _lastQuoteIdx) i = (i+1) % QUOTES.length;
+  _lastQuoteIdx = i;
+  const q = QUOTES[i];
+  const t = document.getElementById("quote-text");
+  const a = document.getElementById("quote-author");
+  if(!t || !a) return;
+  t.textContent = '"' + q.text + '"';
+  a.textContent = "— " + q.author;
+}
+(function initQuotes(){
+  const wrap = document.getElementById("quote-rotator");
+  if(wrap) wrap.addEventListener("click", quoteNext);
+  quoteNext();
+  setInterval(quoteNext, 600000); // 10 min
+})();
+
 (function initBoardSelectors(){
   const ps = document.getElementById("set-pieces");
   ps.innerHTML = PIECE_SETS.map(s => `<option value="${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join("");
