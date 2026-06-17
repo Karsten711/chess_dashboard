@@ -36,7 +36,7 @@
   }
   .wrap{max-width:990px; margin:0 auto;}
 
-  header{display:flex; align-items:flex-start; gap:1.2rem; margin:0 0 1.3rem 2px;}
+  header{display:flex; align-items:flex-start; gap:1.2rem; margin:0 0 1.3rem 2px; padding:0.5rem 0 0.7rem;}
   .head-title{flex:0 0 auto; min-width:0;}
   h1{font-family:var(--display); font-weight:600; font-size:2.1rem;
      letter-spacing:-0.01em; color:var(--board-dark); margin:0;}
@@ -215,13 +215,20 @@
   .ttp-clock{flex:0 0 50px; width:50px; height:50px; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:50%; border:3px solid var(--tile2); color:var(--muted);}
   .ttp-clock .n{font-family:var(--display); font-weight:700; font-size:1.02rem; line-height:1;}
   .ttp-clock .u{font-size:0.52rem; text-transform:uppercase; opacity:0.7;}
-  .ttp-pill{flex:1; text-align:center; background:#f2c79a; border:1px solid var(--border); border-radius:999px; padding:0.58rem 0.5rem; font-family:var(--display); font-weight:700; font-size:0.98rem; letter-spacing:0.05em; text-transform:uppercase; color:#555; box-shadow:0 0 8px 1px rgba(115,102,84,0.26); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .ttp-pill{flex:1; text-align:center; background:#f2c79a; border:1px solid var(--border); border-radius:999px; padding:0.82rem 0.5rem; font-family:var(--display); font-weight:700; font-size:0.98rem; letter-spacing:0.05em; text-transform:uppercase; color:#555; box-shadow:0 0 8px 1px rgba(115,102,84,0.26); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .ttp-row:hover .ttp-pill{opacity:0.82;}
   .ttp-piece{flex:0 0 50px; width:50px; height:50px; display:flex; align-items:center; justify-content:center; font-size:1.7rem; color:var(--accent); opacity:0.5;}
   /* GMT modal */
-  .gmt-overlay{position:fixed; inset:0; background:rgba(40,35,24,0.6); display:none; align-items:flex-start; justify-content:center; padding:1.1rem; overflow:auto; z-index:50;}
-  .gmt-overlay.show{display:flex;}
-  .gmt-modal{background:var(--tile); border:1px solid var(--border); border-radius:var(--radius); max-width:540px; width:100%; padding:1.1rem; box-shadow:0 12px 40px rgba(0,0,0,0.3);}
+  .gmt-overlay,.act-overlay{position:fixed; inset:0; background:rgba(40,35,24,0.6); display:none; align-items:center; justify-content:center; padding:1.4rem; overflow:auto; z-index:50;}
+  .gmt-overlay.show,.act-overlay.show{display:flex;}
+  .gmt-modal,.act-modal{background:var(--tile); border:1px solid var(--border); border-radius:var(--radius); max-width:520px; width:100%; padding:1.5rem 1.8rem; box-shadow:0 12px 40px rgba(0,0,0,0.3); margin:auto;}
+  .gmt-modal .board-wrap{max-width:380px; margin:0.3rem auto 0.5rem;}
+  .act-modal{max-width:440px; text-align:center;}
+  .act-dur{font-size:0.82rem; color:var(--hint); margin-bottom:1rem;}
+  .act-timer{display:flex; align-items:center; justify-content:center; gap:0.7rem; margin:0.4rem 0 1.1rem;}
+  .act-time{font-family:var(--display); font-size:2rem; font-weight:700; font-variant-numeric:tabular-nums; min-width:5rem;}
+  .act-adj{width:2.4rem; height:2.4rem; border-radius:50%; border:1px solid var(--border); background:var(--tile2); font-size:1.2rem; font-weight:700; cursor:pointer; color:var(--text);}
+  .act-foot{display:flex; flex-direction:column; gap:0.6rem; margin-top:0.4rem;}
   .gmt-head{display:flex; align-items:center; justify-content:space-between; gap:0.6rem; margin-bottom:0.3rem;}
   .gmt-open{font-family:var(--display); font-weight:700; font-size:1.15rem;}
   .gmt-tag{font-size:0.84rem; color:var(--hint); margin-bottom:0.7rem;}
@@ -235,9 +242,12 @@
   .gmt-reason{font-size:0.9rem; color:var(--muted); line-height:1.5;}
   .gmt-foot{display:flex; gap:0.5rem; margin-top:0.8rem;}
   .gmt-foot button{flex:1;}
-  .top-row{display:grid; grid-template-columns:1fr 1.7fr; gap:0.95rem; align-items:start; margin-bottom:0.95rem;}
+  .top-row{display:grid; grid-template-columns:1fr 1.7fr; gap:0.95rem; align-items:stretch; margin-bottom:0.95rem;}
   .top-row > .card{margin-bottom:0;}
-  @media(max-width:860px){ .top-row{grid-template-columns:1fr;} }
+  #sec-ttp{display:flex; flex-direction:column;}
+  #sec-ttp .ttp-list{flex:1;}
+  #sec-ttp .ttp-row{flex:1 1 0;}
+  @media(max-width:860px){ .top-row{grid-template-columns:1fr;} #sec-ttp .ttp-row{flex:0 0 auto;} }
   .stat-row{display:grid; grid-template-columns:repeat(5,1fr); gap:0.5rem; margin-bottom:0.8rem;}
   @media(max-width:560px){ .stat-row{grid-template-columns:repeat(3,1fr);} }
   .stat{border:1px solid var(--border); border-radius:12px; padding:0.5rem 0.35rem; text-align:center; background:var(--tile2);}
@@ -254,7 +264,7 @@
   <header>
     <div class="head-title">
       <h1>Chess Trainer</h1>
-      <div class="sub">iPad version · Blunder Review · works offline</div>
+      <div class="sub">iPad version</div>
     </div>
     <div class="head-quote" id="quote-rotator" title="Tap for next quote">
       <span id="quote-text"></span>
@@ -325,6 +335,26 @@
       <div class="gmt-foot">
         <a class="ghost" id="gmt-game" href="#" target="_blank" rel="noopener" style="flex:1; text-align:center; padding:0.75rem; border-radius:14px; text-decoration:none; display:inline-block">Open game ↗</a>
         <button id="gmt-next">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TTP ACTION MODAL -->
+  <div class="act-overlay" id="act-overlay">
+    <div class="act-modal">
+      <div class="gmt-head">
+        <span class="gmt-open" id="act-title">Block</span>
+        <button class="ghost" id="act-close" style="padding:0.3rem 0.8rem">Close</button>
+      </div>
+      <div class="act-dur" id="act-dur"></div>
+      <div class="act-timer">
+        <button class="act-adj" id="act-minus">−</button>
+        <span class="act-time" id="act-time">15:00</span>
+        <button class="act-adj" id="act-plus">+</button>
+      </div>
+      <div class="act-foot">
+        <button id="act-start">Start</button>
+        <a class="act-go" id="act-go" href="#" target="_blank" rel="noopener" style="display:none; text-align:center; padding:0.85rem; border-radius:14px; text-decoration:none; background:#f2c79a; color:#5a4a22; font-weight:700; font-family:var(--display); letter-spacing:0.03em">Open</a>
       </div>
     </div>
   </div>
@@ -408,6 +438,18 @@
         <button class="v-next" data-v="reviewed">Next →</button>
       </div>
     </div>
+
+    <hr class="setup-div">
+    <h2><span class="dot busy" id="eng-dot"></span> Build queue</h2>
+    <p class="lead">Fetches your latest rated Classical games, analyses each of your moves at depth 16, and adds the mistakes to your review queue.</p>
+    <div class="row">
+      <span class="status">Games:</span>
+      <input type="number" id="bld-n" min="1" max="10" value="7">
+      <button id="bld-go" disabled>Build queue</button>
+    </div>
+    <div class="progress hide" id="bld-prog"></div>
+    <div class="bar hide" id="bld-bar"><i></i></div>
+    <p class="hint" id="eng-hint">Loading engine…</p>
   </section>
 
   <!-- OPENING REPERTOIRE -->
@@ -427,18 +469,6 @@
     </div>
     <p class="status" id="li-status" style="margin-top:0.7rem">Not connected.</p>
     <p class="hint">Token via <a href="https://lichess.org/account/oauth/token" target="_blank" rel="noopener">lichess.org → API access tokens</a>. Stored on this device only.</p>
-  
-    <hr class="setup-div">
-    <h2><span class="dot busy" id="eng-dot"></span> Build queue</h2>
-    <p class="lead">Fetches your latest rated Classical games, analyses each of your moves at depth 16, and adds the mistakes to your review queue.</p>
-    <div class="row">
-      <span class="status">Games:</span>
-      <input type="number" id="bld-n" min="1" max="10" value="7">
-      <button id="bld-go" disabled>Build queue</button>
-    </div>
-    <div class="progress hide" id="bld-prog"></div>
-    <div class="bar hide" id="bld-bar"><i></i></div>
-    <p class="hint" id="eng-hint">Loading engine…</p>
   
     <hr class="setup-div">
     <h2><span class="dot busy" id="sw-dot"></span> Offline &amp; install</h2>
@@ -1534,20 +1564,20 @@ document.querySelectorAll("#rg-table th").forEach(th=>{
 
 /* ===================== Today's Training ===================== */
 const TTP_STUDY=[
-  {label:"Openings", min:10, piece:"\u265F", url:"https://chessbook.com/"},
-  {label:"Tactics",  min:15, piece:"\u265E", section:"sec-tp"},
-  {label:"Visualize",min:10, piece:"\u265D", url:"https://listudy.org/en/blind-tactics"},
+  {label:"Openings", min:10, piece:"\u265F", url:"https://chessbook.com/", urlLabel:"Open Chessbook"},
+  {label:"Tactics",  min:15, piece:"\u265E", section:"sec-tp", sectionLabel:"Training Priorities"},
+  {label:"Visualize",min:10, piece:"\u265D", url:"https://listudy.org/en/blind-tactics", urlLabel:"Open Listudy"},
   {label:"GM Focus", min:15, piece:"\u265A", gmt:true},
-  {label:"Endgame",  min:10, piece:"\u265C", url:"https://www.chess.com/endgames"},
-  {label:"Study",    min:45, piece:"\u265B", url:"https://www.chessable.com/", study:true}
+  {label:"Endgame",  min:10, piece:"\u265C", url:"https://www.chess.com/endgames", urlLabel:"Chess.com endgames"},
+  {label:"Study",    min:45, piece:"\u265B", url:"https://www.chessable.com/", urlLabel:"Open Chessable", study:true}
 ];
 const TTP_PLAY=[
-  {label:"Focus",  min:20, piece:"\u265F", section:"sec-op"},
-  {label:"Tactics",min:10, piece:"\u265E", url:"https://lichess.org/training"},
-  {label:"Play",   min:60, piece:"\u265D", url:"https://lichess.org/"},
-  {label:"Review", min:30, piece:"\u265A", section:"sec-rg"},
+  {label:"Focus",  min:20, piece:"\u265F", section:"sec-op", sectionLabel:"Opening Repertoire"},
+  {label:"Tactics",min:10, piece:"\u265E", url:"https://lichess.org/training", urlLabel:"Lichess Puzzles"},
+  {label:"Play",   min:60, piece:"\u265D", url:"https://lichess.org/", urlLabel:"Open Lichess"},
+  {label:"Review", min:30, piece:"\u265A", section:"sec-rg", sectionLabel:"Rated Games"},
   {label:"Unwind", min:30, piece:"\u265C"},
-  {label:"Study",  min:30, piece:"\u265B", url:"https://www.chessable.com/", study:true}
+  {label:"Study",  min:30, piece:"\u265B", url:"https://www.chessable.com/", urlLabel:"Open Chessable", study:true}
 ];
 let ttpMode=localStorage.getItem("ct_ttp_mode")||"study";
 function renderTTP(){
@@ -1561,11 +1591,7 @@ function renderTTP(){
     const left=b.study?`<span class="ttp-clock" style="font-size:1.6rem">\uD83D\uDCD6</span>`
       :`<span class="ttp-clock"><span class="n">${b.min}</span><span class="u">min</span></span>`;
     row.innerHTML=left+`<span class="ttp-pill">${b.label}</span><span class="ttp-piece">${b.piece}</span>`;
-    row.addEventListener("click",()=>{
-      if(b.gmt) openGmt();
-      else if(b.section){ const el=document.getElementById(b.section); if(el) el.scrollIntoView({behavior:"smooth",block:"start"}); }
-      else if(b.url) window.extOpen(b.url);
-    });
+    row.addEventListener("click",()=>{ if(b.gmt) openGmt(); else openAct(b); });
     list.appendChild(row);
   });
 }
@@ -1674,6 +1700,41 @@ document.getElementById("gmt-timer-btn").addEventListener("click",()=>{
   if(gmtTimerId){ gmtTimerStop(); document.getElementById("gmt-timer-btn").textContent="Resume"; }
   else if(gmtRemain>0) gmtTimerStart();
 });
+
+/* ----- TTP action modal ----- */
+let actCur=null, actRemain=900, actTimerId=null;
+function actFmt(s){ const m=Math.floor(s/60), ss=s%60; return m+":"+(ss<10?"0":"")+ss; }
+function actTimerStop(){ if(actTimerId){ clearInterval(actTimerId); actTimerId=null; } }
+function actSetTime(){ document.getElementById("act-time").textContent=actFmt(Math.max(0,actRemain)); }
+function openAct(b){
+  actCur=b; actTimerStop(); actRemain=(b.min||10)*60; actSetTime();
+  document.getElementById("act-title").textContent=b.label;
+  document.getElementById("act-dur").textContent=(b.min||10)+" min suggested";
+  document.getElementById("act-start").textContent="Start";
+  const go=document.getElementById("act-go");
+  if(b.url){ go.style.display="block"; go.textContent=b.urlLabel||"Open"; go.href=b.url; go.onclick=null; }
+  else if(b.section){ go.style.display="block"; go.textContent="Go to "+(b.sectionLabel||b.section); go.href="#";
+    go.onclick=(e)=>{ e.preventDefault(); actClose(); const el=document.getElementById(b.section); if(el) el.scrollIntoView({behavior:"smooth",block:"start"}); }; }
+  else { go.style.display="none"; }
+  document.getElementById("act-overlay").classList.add("show");
+}
+function actClose(){ document.getElementById("act-overlay").classList.remove("show"); actTimerStop(); }
+function actTimerStart(){
+  if(actTimerId) return;
+  document.getElementById("act-start").textContent="Pause";
+  actTimerId=setInterval(()=>{
+    actRemain--; actSetTime();
+    if(actRemain<=0){ clearInterval(actTimerId); actTimerId=null; gmtGong(); document.getElementById("act-start").textContent="Done"; }
+  },1000);
+}
+document.getElementById("act-close").addEventListener("click",actClose);
+document.getElementById("act-overlay").addEventListener("click",e=>{ if(e.target.id==="act-overlay") actClose(); });
+document.getElementById("act-start").addEventListener("click",()=>{
+  if(actTimerId){ actTimerStop(); document.getElementById("act-start").textContent="Resume"; }
+  else if(actRemain>0) actTimerStart();
+});
+document.getElementById("act-minus").addEventListener("click",()=>{ if(actTimerId) return; actRemain=Math.max(300,actRemain-300); actSetTime(); });
+document.getElementById("act-plus").addEventListener("click",()=>{ if(actTimerId) return; actRemain=Math.min(7200,actRemain+300); actSetTime(); });
 
 /* ============================ Start ============================ */
 (function(){ const saved = localStorage.getItem(TOKEN_KEY); if(saved) verifyToken(saved).then(ok=>{ if(ok) loadDashboardTiles(); }); })();
