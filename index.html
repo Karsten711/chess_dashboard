@@ -38,9 +38,9 @@
 
   header{display:flex; align-items:flex-start; gap:1.2rem; margin:0 0 1.3rem 2px; padding:0.5rem 0 0.7rem;}
   .head-title{flex:0 0 auto; min-width:0;}
-  h1{font-family:var(--display); font-weight:600; font-size:2.1rem;
+  h1{font-family:var(--display); font-weight:700; font-size:2.6rem;
      letter-spacing:-0.01em; color:var(--board-dark); margin:0;}
-  .sub{color:var(--muted); font-size:0.95rem; margin-top:0.15rem;}
+  .sub{color:var(--muted); font-size:0.95rem; margin-top:-0.1rem;}
   #refresh-btn{margin-top:0.2rem; padding:0.55rem 1.1rem; border:1px solid var(--border); border-radius:13px; background:var(--tile2); color:var(--text); font-family:var(--display); font-weight:600; font-size:0.95rem; cursor:pointer;}
   #refresh-btn:active{transform:scale(0.97);}
   #refresh-btn:disabled{opacity:0.5;}
@@ -227,7 +227,7 @@
   .ttp-clock{flex:0 0 50px; width:50px; height:50px; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:50%; border:3px solid var(--tile2); color:var(--muted);}
   .ttp-clock .n{font-family:var(--display); font-weight:700; font-size:1.02rem; line-height:1;}
   .ttp-clock .u{font-size:0.52rem; text-transform:uppercase; opacity:0.7;}
-  .ttp-pill{flex:1; align-self:stretch; display:flex; align-items:center; justify-content:center; background:#f2c79a; border:1px solid var(--border); border-radius:999px; padding:0 0.9rem; font-family:var(--display); font-weight:700; font-size:1.12rem; letter-spacing:0.05em; text-transform:uppercase; color:#555; box-shadow:0 0 8px 1px rgba(115,102,84,0.26); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .ttp-pill{flex:1; align-self:stretch; margin:0.15rem 0; display:flex; align-items:center; justify-content:center; background:#f2c79a; border:1px solid var(--border); border-radius:999px; padding:0 0.9rem; font-family:var(--display); font-weight:700; font-size:1.12rem; letter-spacing:0.05em; text-transform:uppercase; color:#555; box-shadow:0 0 8px 1px rgba(115,102,84,0.26); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .ttp-row:hover .ttp-pill{opacity:0.82;}
   .ttp-piece{flex:0 0 50px; width:50px; height:50px; display:flex; align-items:center; justify-content:center; font-size:1.7rem; color:var(--accent); opacity:0.5;}
   /* GMT modal */
@@ -317,7 +317,7 @@
         <span class="chip" data-m="accuracy"><span class="sw" style="background:#2a5f8f"></span>Accuracy</span>
         <span class="chip off" data-m="cp"><span class="sw" style="background:#c0321a"></span>CP loss</span>
         <span class="chip off" data-m="blunder"><span class="sw" style="background:#7a3a8a"></span>Blunder score</span>
-        <span class="chip" data-m="dist"><span class="sw" style="background:linear-gradient(90deg,#d46820 0 34%,#caa64a 34% 67%,#e8d774 67% 100%)"></span>Errors</span>
+        <span class="chip" data-m="dist"><span class="sw" style="background:linear-gradient(90deg,#b66c5e 0 34%,#d46820 34% 67%,#e8d774 67% 100%)"></span>Errors</span>
       </div>
       <div class="chart-box" style="height:400px"><canvas id="rg-chart" role="img" aria-label="Per-game metrics">Per-game rating, accuracy and error metrics.</canvas></div>
     </div>
@@ -501,7 +501,7 @@
     <p class="lead" style="margin-top:0.2rem;margin-bottom:0.4rem">Update the app to the latest version:</p>
     <button id="refresh-btn" type="button">&#8635; Refresh app</button>
     <p class="lead" style="margin-top:0.5rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">Force-loads the newest version and bypasses the cache &mdash; use it after a new build is deployed. The home-screen icon isn&rsquo;t affected; that only updates by removing and re-adding the app.</p>
-    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">Version b10</p>
+    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">Version b12</p>
   
   </section>
 
@@ -1503,8 +1503,8 @@ function buildGamesChart(){
   ds.slice().forEach(d=>{ const m=avgOf(d.data); if(m==null) return;
     ds.push({label:d.label+" avg",data:d.data.map(()=>Math.round(m*10)/10),borderColor:d.borderColor,borderWidth:1,borderDash:[4,4],pointRadius:0,tension:0,spanGaps:true,yAxisID:d.yAxisID,_avg:true}); });
   if(rgShow.dist){
-    ds.push({type:"bar",label:"Blunders",data:eBl,backgroundColor:"#d46820",stack:"err",yAxisID:"yd",order:10,barPercentage:0.6,categoryPercentage:0.8});
-    ds.push({type:"bar",label:"Mistakes",data:eMi,backgroundColor:"#caa64a",stack:"err",yAxisID:"yd",order:10,barPercentage:0.6,categoryPercentage:0.8});
+    ds.push({type:"bar",label:"Blunders",data:eBl,backgroundColor:"#b66c5e",stack:"err",yAxisID:"yd",order:10,barPercentage:0.6,categoryPercentage:0.8});
+    ds.push({type:"bar",label:"Mistakes",data:eMi,backgroundColor:"#d46820",stack:"err",yAxisID:"yd",order:10,barPercentage:0.6,categoryPercentage:0.8});
     ds.push({type:"bar",label:"Inaccuracies",data:eIc,backgroundColor:"#e8d774",stack:"err",yAxisID:"yd",order:10,barPercentage:0.6,categoryPercentage:0.8});
   }
   rgChart=new Chart(document.getElementById("rg-chart"),{type:"line",data:{labels:lab,datasets:ds},
