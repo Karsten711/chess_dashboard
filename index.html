@@ -317,6 +317,7 @@
         <span class="chip" data-m="accuracy"><span class="sw" style="background:#2a5f8f"></span>Accuracy</span>
         <span class="chip off" data-m="cp"><span class="sw" style="background:#c0321a"></span>CP loss</span>
         <span class="chip off" data-m="blunder"><span class="sw" style="background:#7a3a8a"></span>Blunder score</span>
+        <span class="chip" data-m="dist"><span class="sw" style="background:linear-gradient(90deg,#7a3a8a 0 34%,#d46820 34% 67%,#caa64a 67% 100%)"></span>Errors</span>
       </div>
       <div class="chart-box" style="height:400px"><canvas id="rg-chart" role="img" aria-label="Per-game metrics">Per-game rating, accuracy and error metrics.</canvas></div>
     </div>
@@ -500,7 +501,7 @@
     <p class="lead" style="margin-top:0.2rem;margin-bottom:0.4rem">Update the app to the latest version:</p>
     <button id="refresh-btn" type="button">&#8635; Refresh app</button>
     <p class="lead" style="margin-top:0.5rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">Force-loads the newest version and bypasses the cache &mdash; use it after a new build is deployed. The home-screen icon isn&rsquo;t affected; that only updates by removing and re-adding the app.</p>
-    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">Version b8</p>
+    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">Version b9</p>
   
   </section>
 
@@ -1374,7 +1375,7 @@ const REPERTOIRE = [
   {name:'Caro-Kann', color:'black', eco:'B10', slug:'Caro-Kann_Defense', fen:'rnbqkbnr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2', families:['Caro-Kann']}
 ];
 let prGames=[], pzThemes=[], rgChart=null, rgSort={c:"date",dir:"desc"};
-const rgShow={ rating:false, accuracy:true, cp:false, blunder:false };
+const rgShow={ rating:false, accuracy:true, cp:false, blunder:false, dist:true };
 const RG_MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 window.extOpen = function(url){
@@ -1490,6 +1491,9 @@ function buildGamesChart(){
   const accu  =gs.map(g=>{const {me}=meSide(g); return me&&me.analysis&&me.analysis.accuracy!=null?Math.round(me.analysis.accuracy):null;});
   const cp    =gs.map(g=>{const {me}=meSide(g); return me&&me.analysis&&me.analysis.acpl!=null?me.analysis.acpl:null;});
   const bls   =gs.map(g=>{const {me}=meSide(g); const a=me&&me.analysis; return a?3*(a.blunder||0)+2*(a.mistake||0)+(a.inaccuracy||0):null;});
+  const eBl=gs.map(g=>{const {me}=meSide(g); const a=me&&me.analysis; return a?(a.blunder||0):null;});
+  const eMi=gs.map(g=>{const {me}=meSide(g); const a=me&&me.analysis; return a?(a.mistake||0):null;});
+  const eIc=gs.map(g=>{const {me}=meSide(g); const a=me&&me.analysis; return a?(a.inaccuracy||0):null;});
   const ds=[];
   if(rgShow.rating)   ds.push({label:"Rating",data:rating,borderColor:"#6b5d4a",borderWidth:2.5,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y"});
   if(rgShow.accuracy) ds.push({label:"Accuracy",data:accu,borderColor:"#2a5f8f",borderWidth:1.8,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y2"});
@@ -1498,14 +1502,20 @@ function buildGamesChart(){
   const avgOf=arr=>{const v=arr.filter(x=>x!=null); return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;};
   ds.slice().forEach(d=>{ const m=avgOf(d.data); if(m==null) return;
     ds.push({label:d.label+" avg",data:d.data.map(()=>Math.round(m*10)/10),borderColor:d.borderColor,borderWidth:1,borderDash:[4,4],pointRadius:0,tension:0,spanGaps:true,yAxisID:d.yAxisID,_avg:true}); });
+  if(rgShow.dist){
+    ds.push({type:"bar",label:"Blunders",data:eBl,backgroundColor:"#7a3a8a",stack:"err",yAxisID:"yd",order:10});
+    ds.push({type:"bar",label:"Mistakes",data:eMi,backgroundColor:"#d46820",stack:"err",yAxisID:"yd",order:10});
+    ds.push({type:"bar",label:"Inaccuracies",data:eIc,backgroundColor:"#caa64a",stack:"err",yAxisID:"yd",order:10});
+  }
   rgChart=new Chart(document.getElementById("rg-chart"),{type:"line",data:{labels:lab,datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},
       plugins:{legend:{display:false},tooltip:{backgroundColor:"#2a2318",titleColor:"#faf8f4",bodyColor:"#faf8f4",padding:8,filter:(it)=>!(it.dataset&&it.dataset._avg)}},
       scales:{
-        x:{ticks:{font:{size:10},color:"#736654"},grid:{display:false}},
+        x:{stacked:true,ticks:{font:{size:10},color:"#736654"},grid:{display:false}},
         y:{display:rgShow.rating,position:"left",ticks:{font:{size:10},color:"#736654"},grid:{color:"rgba(0,0,0,0.05)"}},
         y2:{display:rgShow.accuracy,position:"right",min:0,max:100,ticks:{font:{size:10},color:"rgba(42,95,143,0.85)",callback:v=>v+"%"},grid:{display:false}},
-        y3:{display:rgShow.cp||rgShow.blunder,position:"right",reverse:true,ticks:{font:{size:10},color:"#736654"},grid:{display:false}}
+        y3:{display:rgShow.cp||rgShow.blunder,position:"right",reverse:true,ticks:{font:{size:10},color:"#736654"},grid:{display:false}},
+        yd:{display:rgShow.dist,position:"left",stacked:true,beginAtZero:true,ticks:{font:{size:10},color:"#736654",precision:0},grid:{display:false}}
       }}});
 }
 
