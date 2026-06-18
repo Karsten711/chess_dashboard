@@ -317,7 +317,7 @@
         <span class="chip" data-m="accuracy"><span class="sw" style="background:#2a5f8f"></span>Accuracy</span>
         <span class="chip off" data-m="cp"><span class="sw" style="background:#c0321a"></span>CP loss</span>
         <span class="chip off" data-m="blunder"><span class="sw" style="background:#7a3a8a"></span>Blunder score</span>
-        <span class="chip" data-m="dist"><span class="sw" style="background:linear-gradient(90deg,#7a3a8a 0 34%,#d46820 34% 67%,#caa64a 67% 100%)"></span>Errors</span>
+        <span class="chip" data-m="dist"><span class="sw" style="background:linear-gradient(90deg,#d46820 0 34%,#caa64a 34% 67%,#e8d774 67% 100%)"></span>Errors</span>
       </div>
       <div class="chart-box" style="height:400px"><canvas id="rg-chart" role="img" aria-label="Per-game metrics">Per-game rating, accuracy and error metrics.</canvas></div>
     </div>
@@ -501,7 +501,7 @@
     <p class="lead" style="margin-top:0.2rem;margin-bottom:0.4rem">Update the app to the latest version:</p>
     <button id="refresh-btn" type="button">&#8635; Refresh app</button>
     <p class="lead" style="margin-top:0.5rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">Force-loads the newest version and bypasses the cache &mdash; use it after a new build is deployed. The home-screen icon isn&rsquo;t affected; that only updates by removing and re-adding the app.</p>
-    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">Version b9</p>
+    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">Version b10</p>
   
   </section>
 
@@ -1503,9 +1503,9 @@ function buildGamesChart(){
   ds.slice().forEach(d=>{ const m=avgOf(d.data); if(m==null) return;
     ds.push({label:d.label+" avg",data:d.data.map(()=>Math.round(m*10)/10),borderColor:d.borderColor,borderWidth:1,borderDash:[4,4],pointRadius:0,tension:0,spanGaps:true,yAxisID:d.yAxisID,_avg:true}); });
   if(rgShow.dist){
-    ds.push({type:"bar",label:"Blunders",data:eBl,backgroundColor:"#7a3a8a",stack:"err",yAxisID:"yd",order:10});
-    ds.push({type:"bar",label:"Mistakes",data:eMi,backgroundColor:"#d46820",stack:"err",yAxisID:"yd",order:10});
-    ds.push({type:"bar",label:"Inaccuracies",data:eIc,backgroundColor:"#caa64a",stack:"err",yAxisID:"yd",order:10});
+    ds.push({type:"bar",label:"Blunders",data:eBl,backgroundColor:"#d46820",stack:"err",yAxisID:"yd",order:10,barPercentage:0.6,categoryPercentage:0.8});
+    ds.push({type:"bar",label:"Mistakes",data:eMi,backgroundColor:"#caa64a",stack:"err",yAxisID:"yd",order:10,barPercentage:0.6,categoryPercentage:0.8});
+    ds.push({type:"bar",label:"Inaccuracies",data:eIc,backgroundColor:"#e8d774",stack:"err",yAxisID:"yd",order:10,barPercentage:0.6,categoryPercentage:0.8});
   }
   rgChart=new Chart(document.getElementById("rg-chart"),{type:"line",data:{labels:lab,datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},
