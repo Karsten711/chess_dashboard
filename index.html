@@ -82,7 +82,8 @@
   .tp-tile{position:relative; border:1px solid var(--border); border-radius:14px; padding:0.9rem 0.6rem 0.7rem; text-decoration:none; color:#fff; display:flex; flex-direction:column; gap:0.15rem; height:120px; overflow:hidden; box-sizing:border-box; cursor:pointer; text-align:center;}
   .tp-tile:hover{filter:brightness(0.94);}
   .tp-tile .rank{position:absolute; top:7px; left:7px; width:34px; height:34px; border:1px solid rgba(255,255,255,0.7); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.92rem; font-weight:600;}
-  .tp-tile .lbl{font-family:var(--display); font-size:1rem; font-weight:700; line-height:1.12;}
+  .tp-tile .lbl{font-family:var(--display); font-size:1.35rem; font-weight:700; line-height:1.12;}
+  .tp-tile .tp-main{flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.12rem;}
   .tp-tile .src{font-size:0.6rem; text-transform:uppercase; letter-spacing:.04em; opacity:0.9;}
   .tp-tile .det{font-size:0.78rem; opacity:0.95; margin-top:auto; padding-top:0.3rem;}
   .op-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:0.7rem; margin-top:0.4rem;}
@@ -223,7 +224,7 @@
   .ttp-clock{flex:0 0 50px; width:50px; height:50px; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:50%; border:3px solid var(--tile2); color:var(--muted);}
   .ttp-clock .n{font-family:var(--display); font-weight:700; font-size:1.02rem; line-height:1;}
   .ttp-clock .u{font-size:0.52rem; text-transform:uppercase; opacity:0.7;}
-  .ttp-pill{flex:1; align-self:stretch; display:flex; align-items:center; justify-content:center; background:#f2c79a; border:1px solid var(--border); border-radius:999px; padding:0 0.9rem; font-family:var(--display); font-weight:700; font-size:0.98rem; letter-spacing:0.05em; text-transform:uppercase; color:#555; box-shadow:0 0 8px 1px rgba(115,102,84,0.26); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .ttp-pill{flex:1; align-self:stretch; display:flex; align-items:center; justify-content:center; background:#f2c79a; border:1px solid var(--border); border-radius:999px; padding:0 0.9rem; font-family:var(--display); font-weight:700; font-size:1.12rem; letter-spacing:0.05em; text-transform:uppercase; color:#555; box-shadow:0 0 8px 1px rgba(115,102,84,0.26); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .ttp-row:hover .ttp-pill{opacity:0.82;}
   .ttp-piece{flex:0 0 50px; width:50px; height:50px; display:flex; align-items:center; justify-content:center; font-size:1.7rem; color:var(--accent); opacity:0.5;}
   /* GMT modal */
@@ -276,7 +277,7 @@
   <header>
     <div class="head-title">
       <h1>Chess Trainer</h1>
-      <div class="sub">iPad version · b3</div>
+      <div class="sub">iPad version · b4</div>
     </div>
     <div class="head-quote" id="quote-rotator" title="Tap for next quote">
       <span id="quote-text"></span>
@@ -1585,7 +1586,7 @@ async function renderPriorities(){
     const errs=c.blunder+c.mistake+c.inaccuracy;
     if(errs)p.push(errs+" error"+(errs>1?"s":"")+" in "+r.games+" game"+(r.games>1?"s":""));
     if(r.pct!=null)p.push(r.pct+"% ("+r.nb+")");
-    return `<a class="tp-tile" style="background:${tpColor(r.pct)}" href="https://lichess.org/training/${r.k}" target="_blank" rel="noopener"><span class="rank">${i+1}</span><div class="lbl">${r.label}</div><div class="src">${src}</div><div class="det">${p.join(" · ")}</div></a>`;
+    return `<a class="tp-tile" style="background:${tpColor(r.pct)}" href="https://lichess.org/training/${r.k}" target="_blank" rel="noopener"><span class="rank">${i+1}</span><div class="tp-main"><div class="lbl">${r.label}</div><div class="src">${src}</div></div><div class="det">${p.join(" · ")}</div></a>`;
   }).join("");
 }
 
