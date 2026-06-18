@@ -41,6 +41,9 @@
   h1{font-family:var(--display); font-weight:600; font-size:2.1rem;
      letter-spacing:-0.01em; color:var(--board-dark); margin:0;}
   .sub{color:var(--muted); font-size:0.95rem; margin-top:0.15rem;}
+  #refresh-btn{margin-left:0.35rem; width:1.5rem; height:1.5rem; padding:0; line-height:1; border:1px solid var(--border); border-radius:50%; background:var(--tile2); color:var(--hint); font-size:0.95rem; cursor:pointer; vertical-align:-0.28rem;}
+  #refresh-btn:active{transform:rotate(180deg);}
+  #refresh-btn:disabled{opacity:0.5;}
   .head-quote{flex:1 1 0; min-width:0; align-self:center; text-align:right;
      cursor:pointer; color:var(--tile); font-style:italic;
      font-size:clamp(0.9rem,1.5vw,1.12rem); line-height:1.4;}
@@ -277,7 +280,7 @@
   <header>
     <div class="head-title">
       <h1>Chess Trainer</h1>
-      <div class="sub">iPad version · b5</div>
+      <div class="sub">iPad version · b6 <button id="refresh-btn" type="button" title="Refresh app" aria-label="Refresh app">&#8635;</button></div>
     </div>
     <div class="head-quote" id="quote-rotator" title="Tap for next quote">
       <span id="quote-text"></span>
@@ -1415,7 +1418,7 @@ async function loadGamesData(user){
     if(!res.ok) throw new Error("HTTP "+res.status);
     const text=await res.text();
     prGames=text.trim().split("\n").filter(Boolean).map(l=>JSON.parse(l));
-    renderRatedGames(); buildGamesChart(); renderOpeningExplorer(); updateStatPills();
+    renderRatedGames(); buildGamesChart(); renderOpeningExplorer(); updateStatPills(); recordCountHistory();
     msg.classList.add("hide"); loaded.classList.remove("hide"); dot.className="dot ok";
     const prL=document.getElementById("pr-loaded"), prM=document.getElementById("pr-msg");
     if(prL)prL.classList.remove("hide"); if(prM)prM.classList.add("hide");
@@ -1783,6 +1786,28 @@ document.getElementById("act-plus").addEventListener("click",()=>{ if(actTimerId
 
 /* ============================ Start ============================ */
 (function(){ const saved = localStorage.getItem(TOKEN_KEY); if(saved) verifyToken(saved).then(ok=>{ if(ok) loadDashboardTiles(); }); })();
+/* In-app refresh: clear shell cache + update SW, then reload — beats stale cached versions */
+async function forceRefresh(){
+  const b=document.getElementById("refresh-btn"); if(b) b.disabled=true;
+  try{
+    if(window.caches){ const ks=await caches.keys(); for(const k of ks){ const c=await caches.open(k); await c.delete("./index.html"); await c.delete("./"); } }
+    if(navigator.serviceWorker){ const regs=await navigator.serviceWorker.getRegistrations(); await Promise.all(regs.map(r=>r.update())); }
+  }catch(e){}
+  location.reload();
+}
+document.getElementById("refresh-btn")?.addEventListener("click", forceRefresh);
+/* count_history: daily snapshot (analyzed games + errors per type) — groundwork for the future error-distribution chart */
+function recordCountHistory(){
+  try{
+    let bl=0,mi=0,ic=0,n=0;
+    for(const g of prGames){ const m=meSide(g).me, a=m&&m.analysis; if(a){ bl+=a.blunder||0; mi+=a.mistake||0; ic+=a.inaccuracy||0; n++; } }
+    const d=new Date().toISOString().slice(0,10);
+    let hist=[]; try{ hist=JSON.parse(localStorage.getItem("ct_count_history")||"[]"); }catch(e){}
+    hist=hist.filter(x=>x.d!==d); hist.push({d,n,bl,mi,ic});
+    hist.sort((a,b)=>a.d<b.d?-1:1); if(hist.length>400) hist=hist.slice(hist.length-400);
+    localStorage.setItem("ct_count_history", JSON.stringify(hist));
+  }catch(e){}
+}
 initEngine();
 renderStats();
 renderTTP();
