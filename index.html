@@ -280,7 +280,7 @@
   <header>
     <div class="head-title">
       <h1>Chess Trainer</h1>
-      <div class="sub">iPad version · b7</div>
+      <div class="sub">iPad version</div>
     </div>
     <div class="head-quote" id="quote-rotator" title="Tap for next quote">
       <span id="quote-text"></span>
@@ -500,6 +500,7 @@
     <p class="lead" style="margin-top:0.2rem;margin-bottom:0.4rem">Update the app to the latest version:</p>
     <button id="refresh-btn" type="button">&#8635; Refresh app</button>
     <p class="lead" style="margin-top:0.5rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">Force-loads the newest version and bypasses the cache &mdash; use it after a new build is deployed. The home-screen icon isn&rsquo;t affected; that only updates by removing and re-adding the app.</p>
+    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">Version b8</p>
   
   </section>
 
@@ -554,7 +555,7 @@ async function initEngine(){
   }
 }
 
-/* score (cp/mate) van multipv-lijn 1, vanuit speler-aan-zet POV */
+/* score (cp/mate) of multipv line 1, from the side-to-move POV */
 async function analyse(fen, depth){
   let cp=null, mate=null, pv=null;
   const collect = (line)=>{
@@ -585,7 +586,7 @@ function fmtEval(cp){
 }
 function winperc(cp){ return 50 + 50*(2/(1+Math.exp(-0.00368208*cp)) - 1); }
 
-/* ===================== Motiefdetectie (port chess_server.py) ===================== */
+/* ===================== Motif detection (port of chess_server.py) ===================== */
 const PIECE_VALUES = {p:1,n:3,b:3,r:5,q:9,k:99};
 function fenToBoard(fen){
   const board = {};
@@ -710,7 +711,7 @@ function generateDescription(severity, motifs, threat){
   return msgs[severity] || "A better move was available";
 }
 
-/* ===================== SM-2 op partijtal (port chess_server.py) ===================== */
+/* ===================== SM-2 on game count (port of chess_server.py) ===================== */
 const SEV_W = {blunder:3, mistake:2, inaccuracy:1};
 const SEV_DOWN = {blunder:"mistake", mistake:"inaccuracy", inaccuracy:"inaccuracy"};
 const RETIRE = 10000000;
@@ -924,7 +925,7 @@ let reviewList=[], reviewIdx=0, currentG=0;
 let pieceSet = localStorage.getItem("ct_piece_set") || "cburnett";
 let boardTheme = localStorage.getItem("ct_board_theme") || "brown";
 function pieceUri(letterUpper, colorChar){
-  const code = colorChar + letterUpper;                 // bv. wN, bK
+  const code = colorChar + letterUpper;                 // e.g. wN, bK
   const svg = (PIECES[pieceSet] && PIECES[pieceSet][code]) || PIECES.cburnett[code];
   return `url('data:image/svg+xml,${encodeURIComponent(svg).replace(/'/g,"%27")}')`;
 }
