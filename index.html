@@ -316,8 +316,8 @@
         <span class="chip off" data-m="rating"><span class="sw" style="background:#6b5d4a"></span>Rating</span>
         <span class="chip" data-m="accuracy"><span class="sw" style="background:#2a5f8f"></span>Accuracy</span>
         <span class="chip off" data-m="cp"><span class="sw" style="background:#c0321a"></span>CP loss</span>
-        <span class="chip off" data-m="blunder"><span class="sw" style="background:#7a3a8a"></span>Blunder score</span>
-        <span class="chip" data-m="dist"><span class="sw" style="background:linear-gradient(90deg,rgba(192,50,26,0.4) 0 34%,rgba(212,104,32,0.4) 34% 67%,rgba(115,102,84,0.4) 67% 100%)"></span>Errors</span>
+        <span class="chip" data-m="blunder"><span class="sw" style="background:#736654"></span>Blunder score</span>
+        <span class="chip" data-m="dist"><span class="sw" style="background:linear-gradient(90deg,rgba(192,50,26,0.2) 0 34%,rgba(212,104,32,0.2) 34% 67%,rgba(115,102,84,0.2) 67% 100%)"></span>Errors</span>
       </div>
       <div class="chart-box" style="height:400px"><canvas id="rg-chart" role="img" aria-label="Per-game metrics">Per-game rating, accuracy and error metrics.</canvas></div>
     </div>
@@ -501,7 +501,7 @@
     <p class="lead" style="margin-top:0.2rem;margin-bottom:0.4rem">Update the app to the latest version:</p>
     <button id="refresh-btn" type="button">&#8635; Refresh app</button>
     <p class="lead" style="margin-top:0.5rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">Force-loads the newest version and bypasses the cache &mdash; use it after a new build is deployed. The home-screen icon isn&rsquo;t affected; that only updates by removing and re-adding the app.</p>
-    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">ChessTrainer web app · b17</p>
+    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">ChessTrainer web app · b18</p>
     <p class="lead" style="margin-top:0.35rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">© 2026 Karsten</p>
   
   </section>
@@ -1376,7 +1376,7 @@ const REPERTOIRE = [
   {name:'Caro-Kann', color:'black', eco:'B10', slug:'Caro-Kann_Defense', fen:'rnbqkbnr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2', families:['Caro-Kann']}
 ];
 let prGames=[], pzThemes=[], rgChart=null, rgSort={c:"date",dir:"desc"};
-const rgShow={ rating:false, accuracy:true, cp:false, blunder:false, dist:true };
+const rgShow={ rating:false, accuracy:true, cp:false, blunder:true, dist:true };
 const RG_MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 window.extOpen = function(url){
@@ -1499,14 +1499,14 @@ function buildGamesChart(){
   if(rgShow.rating)   ds.push({label:"Rating",data:rating,borderColor:"#6b5d4a",borderWidth:2.5,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y"});
   if(rgShow.accuracy) ds.push({label:"Accuracy",data:accu,borderColor:"#2a5f8f",borderWidth:1.8,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y2"});
   if(rgShow.cp)       ds.push({label:"CP loss",data:cp,borderColor:"#c0321a",borderWidth:1.8,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y3"});
-  if(rgShow.blunder)  ds.push({label:"Blunder score",data:bls,borderColor:"#7a3a8a",borderWidth:1.8,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y3"});
+  if(rgShow.blunder)  ds.push({label:"Blunder score",data:bls,borderColor:"#736654",borderWidth:1.8,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y3"});
   const avgOf=arr=>{const v=arr.filter(x=>x!=null); return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;};
   ds.slice().forEach(d=>{ const m=avgOf(d.data); if(m==null) return;
     ds.push({label:d.label+" avg",data:d.data.map(()=>Math.round(m*10)/10),borderColor:d.borderColor,borderWidth:1,borderDash:[4,4],pointRadius:0,tension:0,spanGaps:true,yAxisID:d.yAxisID,_avg:true}); });
   if(rgShow.dist){
-    ds.push({type:"bar",label:"Blunders",data:eBl,backgroundColor:"rgba(192,50,26,0.4)",stack:"err",yAxisID:"yd",order:10,barPercentage:0.6,categoryPercentage:0.8});
-    ds.push({type:"bar",label:"Mistakes",data:eMi,backgroundColor:"rgba(212,104,32,0.4)",stack:"err",yAxisID:"yd",order:10,barPercentage:0.6,categoryPercentage:0.8});
-    ds.push({type:"bar",label:"Inaccuracies",data:eIc,backgroundColor:"rgba(115,102,84,0.4)",stack:"err",yAxisID:"yd",order:10,barPercentage:0.6,categoryPercentage:0.8});
+    ds.push({type:"bar",label:"Blunders",data:eBl,backgroundColor:"rgba(192,50,26,0.2)",stack:"err",yAxisID:"yd",order:10,barPercentage:0.6,categoryPercentage:0.8});
+    ds.push({type:"bar",label:"Mistakes",data:eMi,backgroundColor:"rgba(212,104,32,0.2)",stack:"err",yAxisID:"yd",order:10,barPercentage:0.6,categoryPercentage:0.8});
+    ds.push({type:"bar",label:"Inaccuracies",data:eIc,backgroundColor:"rgba(115,102,84,0.2)",stack:"err",yAxisID:"yd",order:10,barPercentage:0.6,categoryPercentage:0.8});
   }
   rgChart=new Chart(document.getElementById("rg-chart"),{type:"line",data:{labels:lab,datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},
