@@ -49,7 +49,9 @@ The minute splits are a deliberate blend, not equal slices. Three well‑proven 
 
 Treat the numbers as a starting point, not a rule. Shorten what's strong, lengthen what's leaking points, and edit the destinations to match your own tools (see *Customizing*).
 
-### STUDY — about 1 h 45 m
+The minute totals below cover the **core categories** only. The **Study** block on top — book work or a Chessable course — is open‑ended: spend as long as your material needs.
+
+### STUDY — about 1 h of core blocks, plus open‑ended study
 
 | Block | Suggested | Opens |
 |---|:---:|---|
@@ -58,7 +60,7 @@ Treat the numbers as a starting point, not a rule. Shorten what's strong, length
 | Visualize | 10 min | Listudy (blind tactics) |
 | GM Focus | 15 min | GMT trainer *(in‑app)* |
 | Endgame | 10 min | Chess.com endgames · also: Listudy, ChessTempo |
-| Study | 45 min | Chessable |
+| Study | your pace | Chessable / books |
 
 The Tactics block doesn't dump you on a generic puzzle page — it routes through your own weak spots first:
 
@@ -67,16 +69,16 @@ STUDY · Tactics (15 min) → Training Priorities section (in-app) → Lichess p
 extra: ChessTempo
 ```
 
-### PLAY — about 3 h
+### PLAY — about 2 h 30 m of core blocks, plus open‑ended study
 
 | Block | Suggested | Opens |
 |---|:---:|---|
 | Focus | 20 min | Opening Repertoire *(in‑app)* |
-| Tactics | 10 min | Lichess Puzzles |
+| Tactics | 10 min | Easy Lichess Puzzles |
 | Play | 60 min | Lichess |
-| Review | 30 min | Rated Games *(in‑app)* |
+| Analyse | 30 min | Rated Games *(in‑app)* |
 | Unwind | 30 min | — (no link) |
-| Study | 30 min | Chessable |
+| Study | your pace | Chessable / books |
 
 ## How it's built
 
