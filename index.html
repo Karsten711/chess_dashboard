@@ -36,7 +36,7 @@
   }
   .wrap{max-width:990px; margin:0 auto;}
 
-  header{display:grid; grid-template-columns:1fr 1.7fr; gap:0.95rem; align-items:end; margin:0 0 0.5rem 0; padding:0; min-height:4.5rem;}
+  header{display:grid; grid-template-columns:1fr 1.7fr; gap:0.95rem; align-items:end; margin:0 0 1.1rem 0; padding:0; min-height:4.5rem;}
   .head-title{min-width:0; text-align:center; align-self:end;}
   h1{font-family:var(--display); font-weight:700; font-size:3.5rem; line-height:1;
      letter-spacing:-0.01em; color:var(--board-dark); margin:0; white-space:nowrap;}
@@ -504,7 +504,7 @@
     <p class="lead" style="margin-top:0.2rem;margin-bottom:0.4rem">Update the app to the latest version:</p>
     <button id="refresh-btn" type="button">&#8635; Refresh app</button>
     <p class="lead" style="margin-top:0.5rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">Force-loads the newest version and bypasses the cache &mdash; use it after a new build is deployed. The home-screen icon isn&rsquo;t affected; that only updates by removing and re-adding the app.</p>
-    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">ChessTrainer web app · b19</p>
+    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">ChessTrainer web app · b20</p>
     <p class="lead" style="margin-top:0.35rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">© 2026 Karsten</p>
   
   </section>
@@ -1257,10 +1257,20 @@ async function liFetch(url){
   return res;
 }
 
+async function loadRatingHistory(user){
+  try{
+    const rh = await (await liFetch(`https://lichess.org/api/user/${encodeURIComponent(user)}/rating-history`)).json();
+    const series = name => { const e=(rh||[]).find(x=>x.name===name);
+      return (e&&e.points)?e.points.map(p=>({x:Date.UTC(p[0],p[1],p[2]), y:p[3]})):[]; };
+    prClPts=series("Classical"); prPzPts=series("Puzzles");
+    if(prGames&&prGames.length) buildGamesChart();
+  }catch(e){}
+}
 function loadDashboardTiles(){
   const user = localStorage.getItem(USER_KEY)||"";
   if(!user) return;
   loadRatings(user);
+  loadRatingHistory(user);
   loadPuzzleThemes();
   loadGamesData(user);
 }
