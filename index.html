@@ -36,7 +36,7 @@
   }
   .wrap{max-width:990px; margin:0 auto;}
 
-  header{display:grid; grid-template-columns:1fr 1.7fr; gap:0.95rem; align-items:end; margin:0 0 1.1rem 0; padding:0; min-height:4.5rem;}
+  header{display:grid; grid-template-columns:1fr 2fr; gap:0.95rem; align-items:end; margin:0 0 1.1rem 0; padding:0; min-height:4.5rem;}
   .head-title{min-width:0; text-align:center; align-self:end;}
   h1{font-family:var(--display); font-weight:700; font-size:3.5rem; line-height:1;
      letter-spacing:-0.01em; color:var(--board-dark); margin:0; white-space:nowrap;}
@@ -45,7 +45,7 @@
   #refresh-btn{margin-top:0.2rem; padding:0.55rem 1.1rem; border:1px solid var(--border); border-radius:13px; background:var(--tile2); color:var(--text); font-family:var(--display); font-weight:600; font-size:0.95rem; cursor:pointer;}
   #refresh-btn:active{transform:scale(0.97);}
   #refresh-btn:disabled{opacity:0.5;}
-  .head-quote{min-width:0; align-self:start; text-align:right; margin-top:-0.7rem; margin-right:2rem;
+  .head-quote{min-width:0; align-self:start; text-align:center; margin-top:-0.7rem;
      cursor:pointer; color:var(--tile); font-style:italic;
      font-size:clamp(0.9rem,1.5vw,1.12rem); line-height:1.4;}
   #quote-author{display:block; font-style:normal; margin-top:0.4rem;
@@ -294,7 +294,7 @@
 
   <header>
     <div class="head-title">
-      <h1>ChessTrainer<sup class="cmark">©</sup></h1>
+      <h1>ChessTrainer</h1>
     </div>
     <div class="head-quote" id="quote-rotator" title="Tap for next quote">
       <span id="quote-text"></span>
@@ -508,7 +508,7 @@
     <p class="lead" style="margin-top:0.2rem;margin-bottom:0.4rem">Update the app to the latest version:</p>
     <button id="refresh-btn" type="button">&#8635; Refresh app</button>
     <p class="lead" style="margin-top:0.5rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">Force-loads the newest version and bypasses the cache &mdash; use it after a new build is deployed. The home-screen icon isn&rsquo;t affected; that only updates by removing and re-adding the app.</p>
-    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">ChessTrainer web app · b22</p>
+    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">ChessTrainer web app · b23</p>
     <p class="lead" style="margin-top:0.35rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">© 2026 Karsten</p>
   
   </section>
