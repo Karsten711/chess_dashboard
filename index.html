@@ -68,6 +68,16 @@
   .chip{font-size:0.82rem; padding:0.3rem 0.7rem; border-radius:999px; border:1px solid var(--border); cursor:pointer; user-select:none; background:var(--tile2); color:var(--text); display:flex; align-items:center; gap:0.4rem;}
   .chip .sw{width:10px; height:10px; border-radius:3px; display:inline-block;}
   .chip.off{opacity:0.4;}
+  .ctiles{display:grid; grid-template-columns:repeat(5,1fr); gap:0.5rem; margin-bottom:0.85rem;}
+  .ctile{border:1px solid var(--border); border-radius:14px; padding:0.55rem 0.4rem; text-align:center; cursor:pointer; user-select:none; transition:background .15s,border-color .15s,opacity .15s;}
+  .ctile .ct-l{display:block; font-size:0.66rem; font-weight:700; letter-spacing:0.03em; text-transform:uppercase; color:var(--hint); margin-bottom:0.15rem; white-space:nowrap;}
+  .ctile .ct-v{display:block; font-family:var(--display); font-size:1.45rem; font-weight:700; line-height:1.05;}
+  .ctile.off{opacity:0.5;}
+  .ctile[data-m="classical"]{background:rgba(94,88,80,0.10);} .ctile[data-m="classical"]:not(.off){background:rgba(94,88,80,0.32); border-color:rgba(94,88,80,0.5);} .ctile[data-m="classical"] .ct-v{color:#5e5850;}
+  .ctile[data-m="puzzle"]{background:rgba(58,122,74,0.10);} .ctile[data-m="puzzle"]:not(.off){background:rgba(58,122,74,0.30); border-color:rgba(58,122,74,0.5);} .ctile[data-m="puzzle"] .ct-v{color:#2a7a4a;}
+  .ctile[data-m="accuracy"]{background:rgba(42,95,143,0.10);} .ctile[data-m="accuracy"]:not(.off){background:rgba(42,95,143,0.30); border-color:rgba(42,95,143,0.5);} .ctile[data-m="accuracy"] .ct-v{color:#2a5f8f;}
+  .ctile[data-m="blunder"]{background:rgba(212,104,32,0.10);} .ctile[data-m="blunder"]:not(.off){background:rgba(212,104,32,0.32); border-color:rgba(212,104,32,0.5);} .ctile[data-m="blunder"] .ct-v{color:#c4621e;}
+  .ctile[data-m="cp"]{background:rgba(192,50,26,0.10);} .ctile[data-m="cp"]:not(.off){background:rgba(192,50,26,0.30); border-color:rgba(192,50,26,0.5);} .ctile[data-m="cp"] .ct-v{color:#c0321a;}
   .chart-box{position:relative; width:100%; margin-top:0.7rem;}
   .pz-sum{display:flex; flex-wrap:wrap; gap:0.3rem 1.2rem; font-size:0.88rem; color:var(--muted); margin:0.1rem 0 0.5rem;}
   .pz-sum b{color:var(--text);}
@@ -305,19 +315,12 @@
     <h2><span class="dot" id="pr-dot"></span> Profile &amp; Ratings</h2>
     <p class="tile-msg" id="pr-msg">Connect your Lichess token to load your stats.</p>
     <div id="pr-loaded" class="hide">
-      <div class="stat-row">
-        <div class="stat"><span class="v" id="elo-cl">—</span><span class="l">Classical</span></div>
-        <div class="stat sg"><span class="v" id="elo-pz">—</span><span class="l">Puzzle</span></div>
-        <div class="stat sb"><span class="v" id="st-acc">—</span><span class="l">Accuracy</span></div>
-        <div class="stat"><span class="v" id="st-bl">—</span><span class="l">Blunder score</span></div>
-        <div class="stat sp"><span class="v" id="st-cp">—</span><span class="l">CP loss</span></div>
-      </div>
-      <div class="chips" id="rg-chips">
-        <span class="chip off" data-m="rating"><span class="sw" style="background:#6b5d4a"></span>Rating</span>
-        <span class="chip" data-m="accuracy"><span class="sw" style="background:#2a5f8f"></span>Accuracy</span>
-        <span class="chip off" data-m="cp"><span class="sw" style="background:#c0321a"></span>CP loss</span>
-        <span class="chip" data-m="blunder"><span class="sw" style="background:#736654"></span>Blunder score</span>
-        <span class="chip" data-m="dist"><span class="sw" style="background:linear-gradient(90deg,rgba(192,50,26,0.2) 0 34%,rgba(212,104,32,0.2) 34% 67%,rgba(115,102,84,0.2) 67% 100%)"></span>Errors</span>
+      <div class="ctiles" id="rg-tiles">
+        <div class="ctile" data-m="classical"><span class="ct-l">Classical</span><span class="ct-v" id="elo-cl">—</span></div>
+        <div class="ctile" data-m="puzzle"><span class="ct-l">Puzzle rating</span><span class="ct-v" id="elo-pz">—</span></div>
+        <div class="ctile" data-m="accuracy"><span class="ct-l">Accuracy</span><span class="ct-v" id="st-acc">—</span></div>
+        <div class="ctile" data-m="blunder"><span class="ct-l">Blunder score</span><span class="ct-v" id="st-bl">—</span></div>
+        <div class="ctile" data-m="cp"><span class="ct-l">CP loss</span><span class="ct-v" id="st-cp">—</span></div>
       </div>
       <div class="chart-box" style="height:400px"><canvas id="rg-chart" role="img" aria-label="Per-game metrics">Per-game rating, accuracy and error metrics.</canvas></div>
     </div>
@@ -501,7 +504,7 @@
     <p class="lead" style="margin-top:0.2rem;margin-bottom:0.4rem">Update the app to the latest version:</p>
     <button id="refresh-btn" type="button">&#8635; Refresh app</button>
     <p class="lead" style="margin-top:0.5rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">Force-loads the newest version and bypasses the cache &mdash; use it after a new build is deployed. The home-screen icon isn&rsquo;t affected; that only updates by removing and re-adding the app.</p>
-    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">ChessTrainer web app · b18</p>
+    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">ChessTrainer web app · b19</p>
     <p class="lead" style="margin-top:0.35rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">© 2026 Karsten</p>
   
   </section>
@@ -1285,7 +1288,7 @@ async function loadProfileRatings(user){
     const series = name => { const e=(rh||[]).find(x=>x.name===name);
       return (e&&e.points)?e.points.map(p=>({x:Date.UTC(p[0],p[1],p[2]), y:p[3]})):[]; };
     prClPts=series("Classical"); prPzPts=series("Puzzles");
-    buildRatingChart();
+    buildRatingChart(); if(prGames&&prGames.length) buildGamesChart();
     msg.classList.add("hide"); loaded.classList.remove("hide"); dot.className="dot ok";
   }catch(e){
     dot.className="dot err"; loaded.classList.add("hide"); msg.classList.remove("hide");
@@ -1376,7 +1379,7 @@ const REPERTOIRE = [
   {name:'Caro-Kann', color:'black', eco:'B10', slug:'Caro-Kann_Defense', fen:'rnbqkbnr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2', families:['Caro-Kann']}
 ];
 let prGames=[], pzThemes=[], rgChart=null, rgSort={c:"date",dir:"desc"};
-const rgShow={ rating:false, accuracy:true, cp:false, blunder:true, dist:true };
+const rgShow={ classical:false, puzzle:false, accuracy:true, blunder:true, cp:false };
 const RG_MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 window.extOpen = function(url){
@@ -1483,6 +1486,12 @@ function renderRatedGames(){
   document.getElementById("rg-tbody").innerHTML=rows.map(r=>r.html).join("");
 }
 
+function puzzleRatingAt(t){
+  if(!prPzPts||!prPzPts.length||t==null) return null;
+  let r=null;
+  for(const pt of prPzPts){ if(pt.x<=t) r=pt.y; else break; }
+  return r!=null?r:prPzPts[0].y;
+}
 function buildGamesChart(){
   if(!window.Chart) return;
   if(rgChart) rgChart.destroy();
@@ -1496,27 +1505,29 @@ function buildGamesChart(){
   const eMi=gs.map(g=>{const {me}=meSide(g); const a=me&&me.analysis; return a?(a.mistake||0):null;});
   const eIc=gs.map(g=>{const {me}=meSide(g); const a=me&&me.analysis; return a?(a.inaccuracy||0):null;});
   const ds=[];
-  if(rgShow.rating)   ds.push({label:"Rating",data:rating,borderColor:"#6b5d4a",borderWidth:2.5,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y"});
-  if(rgShow.accuracy) ds.push({label:"Accuracy",data:accu,borderColor:"#2a5f8f",borderWidth:1.8,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y2"});
-  if(rgShow.cp)       ds.push({label:"CP loss",data:cp,borderColor:"#c0321a",borderWidth:1.8,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y3"});
-  if(rgShow.blunder)  ds.push({label:"Blunder score",data:bls,borderColor:"#736654",borderWidth:1.8,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y3"});
+  const puzzle=gs.map(g=>puzzleRatingAt(g.createdAt));
+  if(rgShow.classical) ds.push({label:"Classical",data:rating,borderColor:"#6b5d4a",borderWidth:2.5,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y"});
+  if(rgShow.puzzle)    ds.push({label:"Puzzle",data:puzzle,borderColor:"#2a7a4a",borderWidth:1.8,borderDash:[5,4],pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y"});
+  if(rgShow.accuracy)  ds.push({label:"Accuracy",data:accu,borderColor:"#2a5f8f",borderWidth:1.8,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y2"});
+  if(rgShow.cp)        ds.push({label:"CP loss",data:cp,borderColor:"#c0321a",borderWidth:1.8,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y3"});
+  if(rgShow.blunder)   ds.push({label:"Blunder score",data:bls,borderColor:"#736654",borderWidth:1.8,pointRadius:0,tension:0.2,spanGaps:true,yAxisID:"y3"});
   const avgOf=arr=>{const v=arr.filter(x=>x!=null); return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;};
   ds.slice().forEach(d=>{ const m=avgOf(d.data); if(m==null) return;
     ds.push({label:d.label+" avg",data:d.data.map(()=>Math.round(m*10)/10),borderColor:d.borderColor,borderWidth:1,borderDash:[4,4],pointRadius:0,tension:0,spanGaps:true,yAxisID:d.yAxisID,_avg:true}); });
-  if(rgShow.dist){
-    ds.push({type:"bar",label:"Blunders",data:eBl,backgroundColor:"rgba(192,50,26,0.2)",stack:"err",yAxisID:"yd",order:10,barPercentage:0.6,categoryPercentage:0.8});
-    ds.push({type:"bar",label:"Mistakes",data:eMi,backgroundColor:"rgba(212,104,32,0.2)",stack:"err",yAxisID:"yd",order:10,barPercentage:0.6,categoryPercentage:0.8});
-    ds.push({type:"bar",label:"Inaccuracies",data:eIc,backgroundColor:"rgba(115,102,84,0.2)",stack:"err",yAxisID:"yd",order:10,barPercentage:0.6,categoryPercentage:0.8});
+  if(rgShow.blunder){
+    ds.push({type:"bar",label:"Blunders",data:eBl,backgroundColor:"rgba(192,50,26,0.5)",stack:"err",yAxisID:"yd",order:10,barPercentage:0.6,categoryPercentage:0.8});
+    ds.push({type:"bar",label:"Mistakes",data:eMi,backgroundColor:"rgba(212,104,32,0.5)",stack:"err",yAxisID:"yd",order:10,barPercentage:0.6,categoryPercentage:0.8});
+    ds.push({type:"bar",label:"Inaccuracies",data:eIc,backgroundColor:"rgba(115,102,84,0.5)",stack:"err",yAxisID:"yd",order:10,barPercentage:0.6,categoryPercentage:0.8});
   }
   rgChart=new Chart(document.getElementById("rg-chart"),{type:"line",data:{labels:lab,datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},
       plugins:{legend:{display:false},tooltip:{backgroundColor:"#2a2318",titleColor:"#faf8f4",bodyColor:"#faf8f4",padding:8,filter:(it)=>!(it.dataset&&it.dataset._avg)}},
       scales:{
         x:{stacked:true,ticks:{font:{size:10},color:"#736654"},grid:{display:false}},
-        y:{display:rgShow.rating,position:"left",ticks:{font:{size:10},color:"#736654"},grid:{color:"rgba(0,0,0,0.05)"}},
+        y:{display:rgShow.classical||rgShow.puzzle,position:"left",ticks:{font:{size:10},color:"#736654"},grid:{color:"rgba(0,0,0,0.05)"}},
         y2:{display:rgShow.accuracy,position:"right",min:0,max:100,ticks:{font:{size:10},color:"rgba(42,95,143,0.85)",callback:v=>v+"%"},grid:{display:false}},
         y3:{display:rgShow.cp||rgShow.blunder,position:"right",reverse:true,ticks:{font:{size:10},color:"#736654"},grid:{display:false}},
-        yd:{display:rgShow.dist,position:"left",stacked:true,beginAtZero:true,ticks:{font:{size:10},color:"#736654",precision:0},grid:{display:false}}
+        yd:{display:rgShow.blunder,position:"left",stacked:true,beginAtZero:true,ticks:{font:{size:10},color:"#736654",precision:0},grid:{display:false}}
       }}});
 }
 
@@ -1609,7 +1620,8 @@ async function renderPriorities(){
   }).join("");
 }
 
-document.querySelectorAll("#rg-chips .chip").forEach(ch=>{
+document.querySelectorAll("#rg-tiles .ctile").forEach(ch=>{
+  ch.classList.toggle("off",!rgShow[ch.dataset.m]);
   ch.addEventListener("click",()=>{ const m=ch.dataset.m; rgShow[m]=!rgShow[m]; ch.classList.toggle("off",!rgShow[m]); buildGamesChart(); });
 });
 document.querySelectorAll("#rg-table th").forEach(th=>{
