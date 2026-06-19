@@ -39,7 +39,7 @@
   header{display:grid; grid-template-columns:1fr 2fr; gap:0.95rem; align-items:end; margin:0 0 1.1rem 0; padding:0; min-height:4.5rem;}
   .head-title{min-width:0; text-align:center; align-self:end;}
   h1{font-family:var(--display); font-weight:700; font-size:3.5rem; line-height:1;
-     letter-spacing:-0.01em; color:var(--board-dark); margin:0; white-space:nowrap;}
+     letter-spacing:-0.01em; color:#5e5850; margin:0; white-space:nowrap;}
   .cmark{font-size:0.3em; font-weight:600; vertical-align:top; position:relative; top:0.15em; left:0.15em; color:var(--muted); display:inline-block; width:0; white-space:nowrap;}
   .sub{color:var(--muted); font-size:0.95rem; margin-top:-0.25rem;}
   #refresh-btn{margin-top:0.2rem; padding:0.55rem 1.1rem; border:1px solid var(--border); border-radius:13px; background:var(--tile2); color:var(--text); font-family:var(--display); font-weight:600; font-size:0.95rem; cursor:pointer;}
@@ -126,10 +126,11 @@
     border-radius:var(--radius); padding:1.15rem 1.2rem;
     margin-bottom:0.95rem; box-shadow:0 1px 3px rgba(60,50,30,0.10);}
   .card h2{font-family:'FredokaCaps',var(--display); font-weight:600; font-size:1.2rem;
-    margin:-1.15rem -1.2rem 0.95rem -1.2rem; padding:0.72rem 1.2rem;
+    margin:calc(-1.15rem - 1px) calc(-1.2rem - 1px) 0.95rem calc(-1.2rem - 1px); padding:0.72rem 1.2rem;
     background:#5e5850; color:#f1ead9; letter-spacing:0.04em; text-transform:uppercase;
     border-radius:var(--radius) var(--radius) 0 0;
     display:flex; align-items:center; gap:0.55rem; white-space:nowrap;}
+  .setup-sub{display:flex; align-items:center; gap:0.5rem; font-family:var(--display); font-weight:700; font-size:1rem; margin:0 0 0.5rem; color:var(--board-dark);}
   .card .lead{color:var(--muted); font-size:0.9rem; margin:0 0 0.9rem;}
 
   .dot{width:11px; height:11px; border-radius:50%; flex:none;
@@ -346,10 +347,6 @@
         <div class="coords-corner"></div>
         <div class="coords-file" id="gmt-files"></div>
       </div>
-      <div class="gmt-timer">
-        <span class="gmt-time" id="gmt-time">15:00</span>
-        <button class="ghost" id="gmt-timer-btn" style="flex:0 0 auto; padding:0.45rem 1rem">Start</button>
-      </div>
       <div class="gmt-q" id="gmt-q"></div>
       <button id="gmt-reveal" style="width:100%">Reveal</button>
       <div class="gmt-post" id="gmt-post">
@@ -371,13 +368,7 @@
         <button class="ghost" id="act-close" style="padding:0.3rem 0.8rem">Close</button>
       </div>
       <div class="act-dur" id="act-dur"></div>
-      <div class="act-timer">
-        <button class="act-adj" id="act-minus">−</button>
-        <span class="act-time" id="act-time">15:00</span>
-        <button class="act-adj" id="act-plus">+</button>
-      </div>
       <div class="act-foot">
-        <button id="act-start">Start</button>
         <a class="act-go" id="act-go" href="#" target="_blank" rel="noopener" style="display:none">Open</a>
         <div id="act-extra"></div>
       </div>
@@ -486,7 +477,7 @@
 
   <!-- SETUP -->
   <section class="card" id="sec-setup">
-    <h2><span class="dot" id="li-dot"></span> Lichess</h2>
+    <h2><span class="dot" id="li-dot"></span> Setup</h2>
     <p class="lead">Paste a personal access token so the app can fetch your games.</p>
     <div class="row">
       <input type="password" id="li-token" placeholder="lip_…" autocomplete="off" spellcheck="false">
@@ -496,7 +487,7 @@
     <p class="hint">Token via <a href="https://lichess.org/account/oauth/token" target="_blank" rel="noopener">lichess.org → API access tokens</a>. Stored on this device only.</p>
   
     <hr class="setup-div">
-    <h2><span class="dot busy" id="sw-dot"></span> Offline &amp; install</h2>
+    <p class="setup-sub"><span class="dot busy" id="sw-dot"></span> Offline &amp; install</p>
     <p class="status" id="sw-status">Setting up offline mode…</p>
     <p class="lead" style="margin-top:0.8rem;margin-bottom:0.2rem">Add to your iPad home screen:</p>
     <ol class="steps">
@@ -508,7 +499,7 @@
     <p class="lead" style="margin-top:0.2rem;margin-bottom:0.4rem">Update the app to the latest version:</p>
     <button id="refresh-btn" type="button">&#8635; Refresh app</button>
     <p class="lead" style="margin-top:0.5rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">Force-loads the newest version and bypasses the cache &mdash; use it after a new build is deployed. The home-screen icon isn&rsquo;t affected; that only updates by removing and re-adding the app.</p>
-    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">ChessTrainer web app · b23</p>
+    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">ChessTrainer web app · b24</p>
     <p class="lead" style="margin-top:0.35rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">© 2026 Karsten</p>
   
   </section>
@@ -1774,19 +1765,8 @@ function gmtGong(){
 let gmtTimerId=null, gmtRemain=900;
 function gmtFmt(s){ const m=Math.floor(s/60), ss=s%60; return m+":"+(ss<10?"0":"")+ss; }
 function gmtTimerStop(){ if(gmtTimerId){ clearInterval(gmtTimerId); gmtTimerId=null; } }
-function gmtTimerReset(){ gmtTimerStop(); gmtRemain=900; document.getElementById("gmt-time").textContent=gmtFmt(gmtRemain); document.getElementById("gmt-timer-btn").textContent="Start"; }
-function gmtTimerStart(){
-  if(gmtTimerId) return;
-  document.getElementById("gmt-timer-btn").textContent="Pause";
-  gmtTimerId=setInterval(()=>{
-    gmtRemain--; document.getElementById("gmt-time").textContent=gmtFmt(Math.max(0,gmtRemain));
-    if(gmtRemain<=0){ clearInterval(gmtTimerId); gmtTimerId=null; gmtGong(); document.getElementById("gmt-timer-btn").textContent="Done"; }
-  },1000);
-}
-document.getElementById("gmt-timer-btn").addEventListener("click",()=>{
-  if(gmtTimerId){ gmtTimerStop(); document.getElementById("gmt-timer-btn").textContent="Resume"; }
-  else if(gmtRemain>0) gmtTimerStart();
-});
+function gmtTimerReset(){}
+
 
 /* ----- TTP action modal ----- */
 let actCur=null, actRemain=900, actTimerId=null;
@@ -1794,10 +1774,9 @@ function actFmt(s){ const m=Math.floor(s/60), ss=s%60; return m+":"+(ss<10?"0":"
 function actTimerStop(){ if(actTimerId){ clearInterval(actTimerId); actTimerId=null; } }
 function actSetTime(){ document.getElementById("act-time").textContent=actFmt(Math.max(0,actRemain)); }
 function openAct(b){
-  actCur=b; actTimerStop(); actRemain=(b.min||10)*60; actSetTime();
+  actCur=b;
   document.getElementById("act-title").textContent=b.label;
   document.getElementById("act-dur").textContent=(b.min||10)+" min suggested";
-  document.getElementById("act-start").textContent="Start";
   const go=document.getElementById("act-go");
   if(b.url){ go.style.display="block"; go.textContent=b.urlLabel||"Open"; go.href=b.url; go.onclick=null; }
   else if(b.section){ go.style.display="block"; go.textContent="Go to "+(b.sectionLabel||b.section); go.href="#";
@@ -1809,22 +1788,10 @@ function openAct(b){
   document.getElementById("act-overlay").classList.add("show");
 }
 function actClose(){ document.getElementById("act-overlay").classList.remove("show"); actTimerStop(); }
-function actTimerStart(){
-  if(actTimerId) return;
-  document.getElementById("act-start").textContent="Pause";
-  actTimerId=setInterval(()=>{
-    actRemain--; actSetTime();
-    if(actRemain<=0){ clearInterval(actTimerId); actTimerId=null; gmtGong(); document.getElementById("act-start").textContent="Done"; }
-  },1000);
-}
+
 document.getElementById("act-close").addEventListener("click",actClose);
 document.getElementById("act-overlay").addEventListener("click",e=>{ if(e.target.id==="act-overlay") actClose(); });
-document.getElementById("act-start").addEventListener("click",()=>{
-  if(actTimerId){ actTimerStop(); document.getElementById("act-start").textContent="Resume"; }
-  else if(actRemain>0) actTimerStart();
-});
-document.getElementById("act-minus").addEventListener("click",()=>{ if(actTimerId) return; actRemain=Math.max(300,actRemain-300); actSetTime(); });
-document.getElementById("act-plus").addEventListener("click",()=>{ if(actTimerId) return; actRemain=Math.min(7200,actRemain+300); actSetTime(); });
+
 
 /* ============================ Start ============================ */
 (function(){ const saved = localStorage.getItem(TOKEN_KEY); if(saved) verifyToken(saved).then(ok=>{ if(ok) loadDashboardTiles(); }); })();
