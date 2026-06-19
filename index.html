@@ -499,7 +499,7 @@
     <p class="lead" style="margin-top:0.2rem;margin-bottom:0.4rem">Update the app to the latest version:</p>
     <button id="refresh-btn" type="button">&#8635; Refresh app</button>
     <p class="lead" style="margin-top:0.5rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">Force-loads the newest version and bypasses the cache &mdash; use it after a new build is deployed. The home-screen icon isn&rsquo;t affected; that only updates by removing and re-adding the app.</p>
-    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">ChessTrainer web app · b26</p>
+    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">ChessTrainer web app · b27</p>
     <p class="lead" style="margin-top:0.35rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">© 2026 Karsten</p>
   
   </section>
@@ -1646,7 +1646,7 @@ const TTP_STUDY=[
 ];
 const TTP_PLAY=[
   {label:"Focus",  min:20, piece:"\u265F", section:"sec-op", sectionLabel:"Opening Repertoire"},
-  {label:"Tactics",min:10, piece:"\u265E", url:"https://lichess.org/training", urlLabel:"Lichess Puzzles"},
+  {label:"Tactics",min:10, piece:"\u265E", url:"https://lichess.org/training", urlLabel:"Easy Lichess Puzzles"},
   {label:"Play",   min:60, piece:"\u265D", url:"https://lichess.org/", urlLabel:"Open Lichess"},
   {label:"Analyse", min:30, piece:"\u265A", section:"sec-rg", sectionLabel:"Rated Games"},
   {label:"Unwind", min:30, piece:"\u265C"},
@@ -1776,7 +1776,7 @@ function actSetTime(){ document.getElementById("act-time").textContent=actFmt(Ma
 function openAct(b){
   actCur=b;
   document.getElementById("act-title").textContent=b.label;
-  document.getElementById("act-dur").textContent=(b.min||10)+" min suggested";
+  document.getElementById("act-dur").textContent=b.study?"your pace":(b.min||10)+" min suggested";
   const go=document.getElementById("act-go");
   if(b.url){ go.style.display="block"; go.textContent=b.urlLabel||"Open"; go.href=b.url; go.onclick=null; }
   else if(b.section){ go.style.display="block"; go.textContent="Go to "+(b.sectionLabel||b.section); go.href="#";
