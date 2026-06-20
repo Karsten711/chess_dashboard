@@ -499,7 +499,7 @@
     <p class="lead" style="margin-top:0.2rem;margin-bottom:0.4rem">Update the app to the latest version:</p>
     <button id="refresh-btn" type="button">&#8635; Refresh app</button>
     <p class="lead" style="margin-top:0.5rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">Force-loads the newest version and bypasses the cache &mdash; use it after a new build is deployed. The home-screen icon isn&rsquo;t affected; that only updates by removing and re-adding the app.</p>
-    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">ChessTrainer web app · b27</p>
+    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">ChessTrainer web app · b28</p>
     <p class="lead" style="margin-top:0.35rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">© 2026 Karsten</p>
   
   </section>
@@ -1531,7 +1531,7 @@ function buildGamesChart(){
         x:{stacked:true,ticks:{font:{size:10},color:"#736654"},grid:{display:false}},
         y:{display:rgShow.classical||rgShow.puzzle,position:"left",ticks:{font:{size:10},color:"#736654"},grid:{color:"rgba(0,0,0,0.05)"}},
         y2:{display:rgShow.accuracy,position:"right",min:0,max:100,ticks:{font:{size:10},color:"rgba(42,95,143,0.85)",callback:v=>v+"%"},grid:{display:false}},
-        y3:{display:rgShow.cp||rgShow.blunder,position:"right",reverse:true,ticks:{font:{size:10},color:"#736654"},grid:{display:false}},
+        y3:{display:rgShow.cp||rgShow.blunder,position:"right",ticks:{font:{size:10},color:"#736654"},grid:{display:false}},
         yd:{display:rgShow.blunder,position:"left",stacked:true,beginAtZero:true,ticks:{font:{size:10},color:"#736654",precision:0},grid:{display:false}}
       }}});
 }
