@@ -304,9 +304,13 @@
   .gmt-fs .gmt-ilabel{display:block; font-family:var(--display); font-weight:700; font-size:1.2rem; margin-bottom:0.25rem;}
   .gmt-fs .gmt-iblock ul{margin:0; padding-left:1.3rem;}
   .gmt-fs .gmt-iblock li{font-size:1.15rem; line-height:1.35;}
-  .gmt-fs .gmt-infogrid{display:grid; grid-template-columns:max-content 1fr; gap:0.4rem 1rem; margin-bottom:0.8rem;}
+  .gmt-fs .gmt-infogrid{display:flex; flex-direction:column; gap:0.5rem; margin-bottom:0.8rem;}
   .gmt-fs .gmt-infogrid .lbl{font-size:1.1rem; color:var(--hint);}
-  .gmt-fs .gmt-infogrid .val{font-size:1.2rem; white-space:nowrap;}
+  .gmt-fs .gmt-infogrid .val{font-size:1.2rem; overflow-wrap:anywhere;}
+  .gmt-fs .gmt-irow{display:flex; gap:0.8rem; align-items:baseline; flex-wrap:wrap;}
+  .gmt-fs .gmt-irow .lbl{min-width:4.5rem;}
+  .gmt-fs .gmt-players .lbl{margin-bottom:0.15rem;}
+  .gmt-fs .gmt-players .pl{font-size:1.2rem; padding-left:0.1rem; overflow-wrap:anywhere;}
   .gmt-fs .gmt-handoff{display:inline-block; font-family:var(--display); font-weight:700; font-size:1.15rem; padding:0.85rem 1.1rem; border-radius:14px; background:#f2c79a; color:#5a4a22; text-decoration:none;}
   .gmt-fs .gmt-foot{flex:0 0 auto; margin-top:0; padding:0.8rem 1.5rem; gap:0.8rem;}
   @media (max-width:1100px){ .gmt-fs .gmt-col-left,.gmt-fs .gmt-col-right{width:100%; padding-top:1.1rem;} }
@@ -400,7 +404,7 @@
         </div>
         <div class="gmt-col gmt-col-right">
           <div class="gmt-infozone">
-            <div class="gmt-iblock"><span class="gmt-ilabel">Goal &#10138;</span><ul><li>Grandmaster approach in middlegame positions out of the opening repertoire.</li></ul></div>
+            <div class="gmt-iblock"><span class="gmt-ilabel">Goal &#10132;</span><ul><li>Grandmaster approach in middlegame positions out of the opening repertoire.</li></ul></div>
             <div class="gmt-iblock"><span class="gmt-ilabel">How?</span><ul><li>Answer the checklist and form a plan before revealing the move.</li></ul></div>
             <div class="gmt-iblock"><span class="gmt-ilabel">Where?</span><ul><li>Chess.com (reference game).</li></ul></div>
           </div>
@@ -411,7 +415,7 @@
         </div>
       </div>
       <div class="gmt-foot">
-        <button id="gmt-reveal">Done</button>
+        <button id="gmt-reveal">Reveal move</button>
         <button id="gmt-next">Next &#8594;</button>
       </div>
     </div>
@@ -556,7 +560,7 @@
     <p class="lead" style="margin-top:0.2rem;margin-bottom:0.4rem">Update the app to the latest version:</p>
     <button id="refresh-btn" type="button">&#8635; Refresh app</button>
     <p class="lead" style="margin-top:0.5rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">Force-loads the newest version and bypasses the cache &mdash; use it after a new build is deployed. The home-screen icon isn&rsquo;t affected; that only updates by removing and re-adding the app.</p>
-    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">ChessTrainer web app · b32</p>
+    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">ChessTrainer web app · b33</p>
     <p class="lead" style="margin-top:0.35rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">© 2026 Karsten</p>
   
   </section>
@@ -1779,15 +1783,21 @@ function gmtShow(g){
   document.getElementById("gmt-open").textContent=op?("GM Focus \u2192 "+op):"GM Focus";
   document.getElementById("gmt-q").textContent=g.plan_question||"What is the best plan here?";
   document.getElementById("gmt-check").innerHTML=BELNAP_QUESTIONS.map(q=>"<li>"+gmtEsc(q)+"</li>").join("");
+  let ih="";
+  if(g.white&&g.black){
+    ih+='<div class="gmt-players"><div class="lbl">Players</div>'
+      +'<div class="pl">White: '+gmtEsc(g.white)+(g.white_elo?" ("+gmtEsc(g.white_elo)+")":"")+'</div>'
+      +'<div class="pl">Black: '+gmtEsc(g.black)+(g.black_elo?" ("+gmtEsc(g.black_elo)+")":"")+'</div></div>';
+  }
   const rows=[];
-  if(g.white&&g.black) rows.push(["Players",`${g.white}${g.white_elo?` (${g.white_elo})`:""} vs ${g.black}${g.black_elo?` (${g.black_elo})`:""}`]);
   if(g.date) rows.push(["Date",g.date]);
   let mv=g.shift_move?("move "+g.shift_move):""; if(g.shift_cp) mv+=(mv?" \u00B7 ":"")+("shift "+g.shift_cp+" cp");
   if(mv) rows.push(["Move",mv]);
   rows.push(["To move",g.shift_color==="black"?"Black":"White"]);
-  document.getElementById("gmt-info").innerHTML=rows.map(r=>'<div class="lbl">'+gmtEsc(r[0])+'</div><div class="val">'+gmtEsc(r[1])+'</div>').join("");
+  ih+=rows.map(r=>'<div class="gmt-irow"><span class="lbl">'+gmtEsc(r[0])+'</span><span class="val">'+gmtEsc(r[1])+'</span></div>').join("");
+  document.getElementById("gmt-info").innerHTML=ih;
   document.getElementById("gmt-post").classList.remove("show");
-  const rev=document.getElementById("gmt-reveal"); rev.style.display=""; rev.textContent="Done";
+  const rev=document.getElementById("gmt-reveal"); rev.style.display=""; rev.textContent="Reveal move";
   const link=document.getElementById("gmt-game"); link.href=g.reference_game||"#"; link.style.display=g.reference_game?"":"none";
   gmtRenderBoard(g.fen_start,g.shift_color,g.canonical_move,false);
 }
