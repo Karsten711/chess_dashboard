@@ -274,6 +274,42 @@
   .gmt-reason{font-size:0.9rem; color:var(--muted); line-height:1.5;}
   .gmt-foot{display:flex; gap:0.5rem; margin-top:0.8rem;}
   .gmt-foot button{flex:1;}
+  /* ---- GM Focus fullscreen (b30, port from localhost 1.84 _l) ---- */
+  .gmt-overlay.gmt-fs{background:var(--bg-base,#686253); padding:0; align-items:stretch; justify-content:stretch;}
+  .gmt-fs .gmt-modal{max-width:none; width:100vw; height:100vh; max-height:none; border:none; border-radius:0; box-shadow:none; padding:0; margin:0; display:flex; flex-direction:column; overflow:hidden;}
+  .gmt-fs .gmt-head{flex:0 0 auto; padding:0.7rem 1.5rem; justify-content:center; position:relative; margin-bottom:0;}
+  .gmt-fs .gmt-open{font-size:1.75rem; white-space:nowrap;}
+  .gmt-fs #gmt-close{position:absolute; right:1.5rem; top:50%; transform:translateY(-50%); font-size:1.5rem; padding:0.2rem 0.6rem;}
+  .gmt-fs .gmt-fs-row{flex:1 1 auto; min-height:0; display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:stretch;}
+  .gmt-fs .gmt-col-left{justify-self:end; width:min(820px,100%); padding:1.2rem 1.5rem; padding-top:20vh; overflow-y:auto;}
+  .gmt-fs .gmt-col-right{justify-self:start; width:min(820px,100%); padding:1.2rem 1.5rem; padding-top:20vh; overflow-y:auto;}
+  .gmt-fs .gmt-board-zone{display:flex; align-items:flex-start; justify-content:center; padding:0.5rem 1.2rem; min-width:0;}
+  .gmt-fs .gmt-board-zone .board-wrap{max-width:none; width:auto; margin:0; grid-template-columns:1.7rem auto; grid-template-rows:auto 1.7rem;}
+  .gmt-fs .gmt-board-zone #gmt-board{width:min(calc(100vh - 200px),58vw); height:min(calc(100vh - 200px),58vw); aspect-ratio:auto;}
+  .gmt-fs .gmt-board-zone .coords-rank div,.gmt-fs .gmt-board-zone .coords-file div{font-size:1.2rem; font-weight:600; color:var(--muted);}
+  .gmt-fs .gmt-mainq-label{display:block; font-family:var(--display); font-weight:700; font-size:1.75rem; margin-bottom:0.5rem;}
+  .gmt-fs .gmt-mainq-value{display:block; position:relative; padding-left:1.9rem; font-size:1.7rem; line-height:1.4; margin-bottom:1.1rem;}
+  .gmt-fs .gmt-mainq-value::before{content:"\2022"; position:absolute; left:0.55rem; color:var(--text);}
+  .gmt-fs .gmt-check-header{font-family:var(--display); font-weight:700; font-size:1.75rem; margin-bottom:0.5rem;}
+  .gmt-fs .gmt-check-ol{font-size:1.7rem; line-height:1.7; padding-left:1.9rem; margin:0;}
+  .gmt-fs .gmt-post{display:none; border-top:none; margin-top:1.5rem; padding-top:0;}
+  .gmt-fs .gmt-post.show{display:block;}
+  .gmt-fs .gmt-post-header{font-family:var(--display); font-weight:700; font-size:1.75rem; margin-bottom:0.5rem;}
+  .gmt-fs .gmt-canon{font-family:var(--display); font-weight:700; font-size:1.7rem; color:var(--text); margin-bottom:0.4rem;}
+  .gmt-fs .gmt-theme{font-size:1.2rem; color:var(--hint); margin-bottom:0.5rem;}
+  .gmt-fs .gmt-reason{font-size:1.7rem; line-height:1.55; color:var(--muted);}
+  .gmt-fs .gmt-infozone{background:var(--tile2); border:1px solid var(--border); border-radius:18px; padding:1.1rem 1.25rem; margin-bottom:1rem;}
+  .gmt-fs .gmt-iblock{margin-bottom:1rem;}
+  .gmt-fs .gmt-iblock:last-child{margin-bottom:0;}
+  .gmt-fs .gmt-ilabel{display:block; font-family:var(--display); font-weight:700; font-size:1.6rem; margin-bottom:0.3rem;}
+  .gmt-fs .gmt-iblock ul{margin:0; padding-left:1.4rem;}
+  .gmt-fs .gmt-iblock li{font-size:1.5rem; line-height:1.4;}
+  .gmt-fs .gmt-infogrid{display:grid; grid-template-columns:max-content 1fr; gap:0.45rem 1rem; margin-bottom:1rem;}
+  .gmt-fs .gmt-infogrid .lbl{font-size:1.45rem; color:var(--hint);}
+  .gmt-fs .gmt-infogrid .val{font-size:1.55rem; white-space:nowrap;}
+  .gmt-fs .gmt-handoff{display:inline-block; font-family:var(--display); font-weight:700; font-size:1.4rem; padding:1rem 1.2rem; border-radius:14px; background:#f2c79a; color:#5a4a22; text-decoration:none;}
+  .gmt-fs .gmt-foot{flex:0 0 auto; margin-top:0; padding:0.8rem 1.5rem; gap:0.8rem;}
+  @media (max-width:1100px){ .gmt-fs .gmt-col-left,.gmt-fs .gmt-col-right{width:100%; padding-top:1.2rem;} }
   .top-row{display:grid; grid-template-columns:1fr 1.7fr; gap:0.95rem; align-items:stretch; margin-bottom:0.95rem;}
   .top-row > .card{margin-bottom:0;}
   #sec-ttp{display:flex; flex-direction:column;}
@@ -333,29 +369,50 @@
   </div>
 
   <!-- GM FOCUS / GMT TRAINER -->
-  <div class="gmt-overlay" id="gmt-overlay">
+  <div class="gmt-overlay gmt-fs" id="gmt-overlay">
     <div class="gmt-modal">
       <div class="gmt-head">
         <span class="gmt-open" id="gmt-open">GM Focus</span>
-        <button class="ghost" id="gmt-close" style="padding:0.3rem 0.8rem">Close</button>
+        <button class="ghost" id="gmt-close" aria-label="Close">&#10005;</button>
       </div>
-      <div class="gmt-tag" id="gmt-tag"></div>
-      <div class="gmt-info" id="gmt-info"></div>
-      <div class="board-wrap">
-        <div class="coords-rank" id="gmt-ranks"></div>
-        <div class="board theme-brown" id="gmt-board"></div>
-        <div class="coords-corner"></div>
-        <div class="coords-file" id="gmt-files"></div>
-      </div>
-      <div class="gmt-q" id="gmt-q"></div>
-      <button id="gmt-reveal" style="width:100%">Reveal</button>
-      <div class="gmt-post" id="gmt-post">
-        <div class="gmt-canon" id="gmt-canon"></div>
-        <div class="gmt-reason" id="gmt-reason"></div>
+      <div class="gmt-fs-row">
+        <div class="gmt-col gmt-col-left">
+          <div class="gmt-check-card">
+            <span class="gmt-mainq-label">Main question:</span>
+            <span class="gmt-mainq-value" id="gmt-q"></span>
+            <div class="gmt-check-header">Identify Checklist:</div>
+            <ol class="gmt-check-ol" id="gmt-check"></ol>
+          </div>
+          <div class="gmt-post" id="gmt-post">
+            <div class="gmt-post-header">After thinking</div>
+            <div class="gmt-canon" id="gmt-canon"></div>
+            <div class="gmt-theme" id="gmt-theme"></div>
+            <div class="gmt-reason" id="gmt-reason"></div>
+          </div>
+        </div>
+        <div class="gmt-board-zone">
+          <div class="board-wrap">
+            <div class="coords-rank" id="gmt-ranks"></div>
+            <div class="board theme-brown" id="gmt-board"></div>
+            <div class="coords-corner"></div>
+            <div class="coords-file" id="gmt-files"></div>
+          </div>
+        </div>
+        <div class="gmt-col gmt-col-right">
+          <div class="gmt-infozone">
+            <div class="gmt-iblock"><span class="gmt-ilabel">Goal &#10138;</span><ul><li>Grandmaster approach in middlegame positions out of the opening repertoire.</li></ul></div>
+            <div class="gmt-iblock"><span class="gmt-ilabel">How?</span><ul><li>Answer the checklist and form a plan before revealing the move.</li></ul></div>
+            <div class="gmt-iblock"><span class="gmt-ilabel">Where?</span><ul><li>Chess.com (reference game).</li></ul></div>
+          </div>
+          <div class="gmt-infogrid" id="gmt-info"></div>
+          <div class="gmt-action">
+            <a class="gmt-handoff" id="gmt-game" href="#" target="_blank" rel="noopener">Chess.com &#8594;</a>
+          </div>
+        </div>
       </div>
       <div class="gmt-foot">
-        <a class="ghost" id="gmt-game" href="#" target="_blank" rel="noopener" style="flex:1; text-align:center; padding:0.75rem; border-radius:14px; text-decoration:none; display:inline-block">Open game ↗</a>
-        <button id="gmt-next">Next →</button>
+        <button id="gmt-reveal">Done</button>
+        <button id="gmt-next">Next &#8594;</button>
       </div>
     </div>
   </div>
@@ -499,7 +556,7 @@
     <p class="lead" style="margin-top:0.2rem;margin-bottom:0.4rem">Update the app to the latest version:</p>
     <button id="refresh-btn" type="button">&#8635; Refresh app</button>
     <p class="lead" style="margin-top:0.5rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">Force-loads the newest version and bypasses the cache &mdash; use it after a new build is deployed. The home-screen icon isn&rsquo;t affected; that only updates by removing and re-adding the app.</p>
-    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">ChessTrainer web app · b29</p>
+    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">ChessTrainer web app · b30</p>
     <p class="lead" style="margin-top:0.35rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">© 2026 Karsten</p>
   
   </section>
@@ -1714,19 +1771,23 @@ function gmtRenderBoard(fen,color,canonUci,revealed){
   document.getElementById("gmt-ranks").innerHTML=ro.map(ry=>`<div>${ry+1}</div>`).join("");
   document.getElementById("gmt-files").innerHTML=fo.map(fx=>`<div>${String.fromCharCode(97+fx)}</div>`).join("");
 }
+const BELNAP_QUESTIONS=["What is my opponent's plan?","What are the fixed structural features?","Which is the worst placed piece? (both sides)","Any relevant pawn breaks?"];
+function gmtEsc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 function gmtShow(g){
   gmtCur=g;
-  document.getElementById("gmt-open").textContent=GMT_OPENING[g.opening_slug]||g.opening_slug||"GM Focus";
-  document.getElementById("gmt-tag").textContent=g.theme_tag||"";
-  const info=[];
-  if(g.white&&g.black) info.push(`${g.white}${g.white_elo?` (${g.white_elo})`:""} vs ${g.black}${g.black_elo?` (${g.black_elo})`:""}`);
-  if(g.date) info.push(g.date);
-  if(g.shift_cp) info.push(`shift ${g.shift_cp} cp`);
-  info.push((g.shift_color==="black"?"Black":"White")+" to move");
-  document.getElementById("gmt-info").textContent=info.join("  \u00B7  ");
+  const op=GMT_OPENING[g.opening_slug]||g.opening_slug||"";
+  document.getElementById("gmt-open").textContent=op?("GM Focus \u2192 "+op):"GM Focus";
   document.getElementById("gmt-q").textContent=g.plan_question||"What is the best plan here?";
+  document.getElementById("gmt-check").innerHTML=BELNAP_QUESTIONS.map(q=>"<li>"+gmtEsc(q)+"</li>").join("");
+  const rows=[];
+  if(g.white&&g.black) rows.push(["Players",`${g.white}${g.white_elo?` (${g.white_elo})`:""} vs ${g.black}${g.black_elo?` (${g.black_elo})`:""}`]);
+  if(g.date) rows.push(["Date",g.date]);
+  let mv=g.shift_move?("move "+g.shift_move):""; if(g.shift_cp) mv+=(mv?" \u00B7 ":"")+("shift "+g.shift_cp+" cp");
+  if(mv) rows.push(["Move",mv]);
+  rows.push(["To move",g.shift_color==="black"?"Black":"White"]);
+  document.getElementById("gmt-info").innerHTML=rows.map(r=>'<div class="lbl">'+gmtEsc(r[0])+'</div><div class="val">'+gmtEsc(r[1])+'</div>').join("");
   document.getElementById("gmt-post").classList.remove("show");
-  document.getElementById("gmt-reveal").style.display="";
+  const rev=document.getElementById("gmt-reveal"); rev.style.display=""; rev.textContent="Done";
   const link=document.getElementById("gmt-game"); link.href=g.reference_game||"#"; link.style.display=g.reference_game?"":"none";
   gmtRenderBoard(g.fen_start,g.shift_color,g.canonical_move,false);
 }
@@ -1740,7 +1801,8 @@ document.getElementById("gmt-close").addEventListener("click",gmtClose);
 document.getElementById("gmt-overlay").addEventListener("click",e=>{ if(e.target.id==="gmt-overlay") gmtClose(); });
 document.getElementById("gmt-reveal").addEventListener("click",()=>{
   if(!gmtCur) return;
-  document.getElementById("gmt-canon").textContent="Canonical move: "+gmtCanonSan(gmtCur);
+  document.getElementById("gmt-canon").innerHTML="<strong>Canonical move:</strong> "+gmtEsc(gmtCanonSan(gmtCur));
+  document.getElementById("gmt-theme").textContent=gmtCur.theme_tag||"";
   document.getElementById("gmt-reason").textContent=gmtCur.reasoning||"";
   document.getElementById("gmt-post").classList.add("show");
   document.getElementById("gmt-reveal").style.display="none";
