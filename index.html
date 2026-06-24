@@ -569,7 +569,7 @@
     <p class="lead" style="margin-top:0.2rem;margin-bottom:0.4rem">Update the app to the latest version:</p>
     <button id="refresh-btn" type="button">&#8635; Refresh app</button>
     <p class="lead" style="margin-top:0.5rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">Force-loads the newest version and bypasses the cache &mdash; use it after a new build is deployed. The home-screen icon isn&rsquo;t affected; that only updates by removing and re-adding the app.</p>
-    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">ChessTrainer web app · b37</p>
+    <p class="lead" style="margin-top:0.7rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">ChessTrainer web app · b38</p>
     <p class="lead" style="margin-top:0.35rem;margin-bottom:0;font-size:0.85rem;color:var(--hint)">© 2026 Karsten</p>
   
   </section>
@@ -1786,6 +1786,12 @@ function gmtRenderBoard(fen,color,canonUci,revealed){
 }
 const BELNAP_QUESTIONS=["What is my opponent's plan?","What are the fixed structural features?","Which is the worst placed piece? (both sides)","Any relevant pawn breaks?"];
 function gmtEsc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function gmtCanonBold(s){
+  s=String(s==null?"":s);
+  var m=s.match(/^(\d+\.+)\s+(\S.*)$/);
+  if(m) return gmtEsc(m[1])+" <b>"+gmtEsc(m[2])+"</b>";
+  return gmtEsc(s);
+}
 function gmtReasonHtml(s){
   if(s==null) return "";
   var h=String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
@@ -1828,7 +1834,7 @@ document.getElementById("gmt-close").addEventListener("click",gmtClose);
 document.getElementById("gmt-overlay").addEventListener("click",e=>{ if(e.target.id==="gmt-overlay") gmtClose(); });
 document.getElementById("gmt-reveal").addEventListener("click",()=>{
   if(!gmtCur) return;
-  document.getElementById("gmt-canon").innerHTML="<strong>Canonical move:</strong> <b>"+gmtEsc(gmtCanonSan(gmtCur))+"</b>";
+  document.getElementById("gmt-canon").innerHTML="<strong>Canonical move:</strong> "+gmtCanonBold(gmtCanonSan(gmtCur));
   document.getElementById("gmt-theme").innerHTML="<strong>Theme:</strong> "+gmtEsc(gmtCur.theme_tag||"");
   document.getElementById("gmt-reason").innerHTML=gmtReasonHtml(gmtCur.reasoning||"");
   document.getElementById("gmt-post").classList.add("show");
