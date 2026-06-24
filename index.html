@@ -328,6 +328,12 @@
   .stat.sg{background:rgba(42,122,74,0.14);} .stat.sg .v{color:#2a7a4a;}
   .stat.sb{background:rgba(42,95,143,0.14);} .stat.sb .v{color:#2a5f8f;}
   .stat.sp{background:rgba(212,104,32,0.14);} .stat.sp .v{color:#b4561a;}
+  .gmt-fs .gmt-mainq-label{text-transform:uppercase;}
+  .gmt-fs .gmt-check-header{text-transform:uppercase;}
+  .gmt-fs .gmt-post-header{text-transform:uppercase;}
+  .gmt-fs .gmt-mainq-value::before{content:"\2192";}
+  .gmt-fs .gmt-theme strong{font-weight:700; color:var(--text);}
+  .gmt-reason b{font-weight:700;}
 </style>
 </head>
 <body>
@@ -388,7 +394,7 @@
             <ol class="gmt-check-ol" id="gmt-check"></ol>
           </div>
           <div class="gmt-post" id="gmt-post">
-            <div class="gmt-post-header">After thinking</div>
+            <div class="gmt-post-header">After thinking:</div>
             <div class="gmt-canon" id="gmt-canon"></div>
             <div class="gmt-theme" id="gmt-theme"></div>
             <div class="gmt-reason" id="gmt-reason"></div>
@@ -1777,6 +1783,14 @@ function gmtRenderBoard(fen,color,canonUci,revealed){
 }
 const BELNAP_QUESTIONS=["What is my opponent's plan?","What are the fixed structural features?","Which is the worst placed piece? (both sides)","Any relevant pawn breaks?"];
 function gmtEsc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function gmtReasonHtml(s){
+  if(s==null) return "";
+  var h=String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  h=h.replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>");
+  h=h.replace(/\n/g,"<br>");
+  return h;
+}
+
 function gmtShow(g){
   gmtCur=g;
   const op=GMT_OPENING[g.opening_slug]||g.opening_slug||"";
@@ -1812,8 +1826,8 @@ document.getElementById("gmt-overlay").addEventListener("click",e=>{ if(e.target
 document.getElementById("gmt-reveal").addEventListener("click",()=>{
   if(!gmtCur) return;
   document.getElementById("gmt-canon").innerHTML="<strong>Canonical move:</strong> "+gmtEsc(gmtCanonSan(gmtCur));
-  document.getElementById("gmt-theme").textContent=gmtCur.theme_tag||"";
-  document.getElementById("gmt-reason").textContent=gmtCur.reasoning||"";
+  document.getElementById("gmt-theme").innerHTML="<strong>Theme:</strong> "+gmtEsc(gmtCur.theme_tag||"");
+  document.getElementById("gmt-reason").innerHTML=gmtReasonHtml(gmtCur.reasoning||"");
   document.getElementById("gmt-post").classList.add("show");
   document.getElementById("gmt-reveal").style.display="none";
   gmtRenderBoard(gmtCur.fen_start,gmtCur.shift_color,gmtCur.canonical_move,true);
